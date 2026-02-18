@@ -42,7 +42,7 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
 
       const { error } = await supabase
         .from("waitlist")
-        .insert({ email, trades });
+        .insert({ email });
 
       console.log("[waitlist] insert result:", { error });
 
