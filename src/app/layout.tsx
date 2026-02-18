@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   title: "PnLab \u2014 Find Your Trading Edge",
   description:
     "Log every trade. Spot hidden patterns. Get AI-powered insights that actually make you a better trader.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
