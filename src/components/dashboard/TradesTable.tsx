@@ -51,6 +51,7 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                 "Fees",
                 "Strategy",
                 "Exchange",
+                "Notes",
                 "",
               ].map((h, i) => (
                 <th
@@ -71,7 +72,18 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                 <td className="px-3 py-2 md:px-4 md:py-3 text-text-muted font-light whitespace-nowrap">
                   {formatDate(trade.closed_at || trade.opened_at)}
                 </td>
-                <td className="px-3 py-2 md:px-4 md:py-3 font-medium">{trade.symbol}</td>
+                <td className="px-3 py-2 md:px-4 md:py-3 font-medium">
+                  {trade.symbol}
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded ml-1.5 ${
+                      trade.source === "manual"
+                        ? "bg-bg-elevated text-text-muted"
+                        : "bg-green-dim text-green"
+                    }`}
+                  >
+                    {trade.source === "manual" ? "Manual" : "Synced"}
+                  </span>
+                </td>
                 <td className="px-3 py-2 md:px-4 md:py-3">
                   <span
                     className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium ${
@@ -109,6 +121,16 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                 </td>
                 <td className="px-3 py-2 md:px-4 md:py-3 font-light text-text-muted">
                   {trade.exchange}
+                </td>
+                <td
+                  className="px-3 py-2 md:px-4 md:py-3 font-light text-text-muted max-w-[200px] truncate"
+                  title={trade.notes || undefined}
+                >
+                  {trade.notes
+                    ? trade.notes.length > 30
+                      ? trade.notes.slice(0, 30) + "..."
+                      : trade.notes
+                    : "—"}
                 </td>
                 <td className="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap">
                   <button

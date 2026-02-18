@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createBrowserClient } from "@/lib/supabase";
 
 interface WaitlistModalProps {
   isOpen: boolean;
@@ -43,7 +44,22 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
     } catch {
       // still show success
     }
-    setWaitlistPosition(Math.floor(Math.random() * 200 + 47));
+
+    // Insert into Supabase waitlist and get real position
+    try {
+      const supabase = createBrowserClient();
+      await supabase.from("waitlist").upsert(
+        { email, trades },
+        { onConflict: "email" }
+      );
+      const { count } = await supabase
+        .from("waitlist")
+        .select("*", { count: "exact", head: true });
+      setWaitlistPosition(count ?? 0);
+    } catch {
+      // fallback position
+      setWaitlistPosition(0);
+    }
     setSubmitted(true);
   }
 
@@ -61,10 +77,14 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
             <h3 className="font-serif text-[28px] mb-2">You&apos;re in!</h3>
             <p className="text-text-muted text-[13px] mt-2 font-light">
               We&apos;ll email you when PnLab is ready.
-              <br />
-              <span className="text-green">
-                Position #{waitlistPosition} on the waitlist
-              </span>
+              {waitlistPosition > 0 && (
+                <>
+                  <br />
+                  <span className="text-green">
+                    Position #{waitlistPosition} on the waitlist
+                  </span>
+                </>
+              )}
             </p>
           </>
         ) : (

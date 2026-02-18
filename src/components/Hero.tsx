@@ -1,10 +1,24 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { createBrowserClient } from "@/lib/supabase";
+
 interface HeroProps {
   onOpenModal: () => void;
 }
 
 export default function Hero({ onOpenModal }: HeroProps) {
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const supabase = createBrowserClient();
+    supabase
+      .from("waitlist")
+      .select("*", { count: "exact", head: true })
+      .then(({ count }) => {
+        setWaitlistCount(count ?? 0);
+      });
+  }, []);
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-10 pt-[120px] pb-20 relative max-md:px-5 max-md:pt-[100px] max-md:pb-[60px]">
       <div className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(167,139,250,0.08),transparent_70%)] top-[10%] left-1/2 -translate-x-1/2 pointer-events-none" />
@@ -38,9 +52,11 @@ export default function Hero({ onOpenModal }: HeroProps) {
           See How It Works &darr;
         </a>
       </div>
-      <p className="text-text-muted text-[13px] font-light mt-5 animate-[fadeUp_0.8s_ease-out_0.3s_both]">
-        Join 200+ traders on the waitlist
-      </p>
+      {waitlistCount !== null && waitlistCount >= 10 && (
+        <p className="text-text-muted text-[13px] font-light mt-5 animate-[fadeUp_0.8s_ease-out_0.3s_both]">
+          Join {waitlistCount}+ traders on the waitlist
+        </p>
+      )}
     </section>
   );
 }
