@@ -45,6 +45,7 @@ export interface TradeFilters {
   symbol: string;
   direction: "" | "long" | "short";
   strategy: string;
+  exchange: string;
   dateFrom: string;
   dateTo: string;
 }

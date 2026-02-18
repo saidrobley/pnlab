@@ -23,6 +23,7 @@ export default function TradesToolbar({
       symbol: "",
       direction: "",
       strategy: "",
+      exchange: "",
       dateFrom: "",
       dateTo: "",
     });
@@ -57,6 +58,19 @@ export default function TradesToolbar({
         onChange={(e) => update({ strategy: e.target.value })}
         className={`${inputClass} w-full sm:w-[140px]`}
       />
+      <select
+        value={filters.exchange}
+        onChange={(e) => update({ exchange: e.target.value })}
+        className={`${inputClass} w-full sm:w-[140px]`}
+      >
+        <option value="">All Exchanges</option>
+        <option value="Binance">Binance</option>
+        <option value="Bybit">Bybit</option>
+        <option value="Hyperliquid">Hyperliquid</option>
+        <option value="Coinbase">Coinbase</option>
+        <option value="Kraken">Kraken</option>
+        <option value="Other">Other</option>
+      </select>
       <input
         type="date"
         value={filters.dateFrom}

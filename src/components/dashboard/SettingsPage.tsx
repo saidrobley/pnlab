@@ -15,6 +15,8 @@ export default function SettingsPage({ email }: SettingsPageProps) {
   const [createdAt, setCreatedAt] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [defaultCurrency, setDefaultCurrency] = useState("USD");
+  const [defaultExchange, setDefaultExchange] = useState("Binance");
 
   useEffect(() => {
     setMounted(true);
@@ -45,6 +47,11 @@ export default function SettingsPage({ email }: SettingsPageProps) {
       }
     }
     fetchProfile();
+
+    const storedCurrency = localStorage.getItem("pnlab_default_currency");
+    const storedExchange = localStorage.getItem("pnlab_default_exchange");
+    if (storedCurrency) setDefaultCurrency(storedCurrency);
+    if (storedExchange) setDefaultExchange(storedExchange);
   }, []);
 
   async function handleSave(e: React.FormEvent) {
@@ -156,7 +163,55 @@ export default function SettingsPage({ email }: SettingsPageProps) {
               ))}
             </div>
           )}
-        </div>      </div>
+        </div>
+
+        {/* Preferences */}
+        <div className="bg-bg-card border border-border rounded-2xl p-4 md:p-6">
+          <h3 className="text-[15px] font-semibold mb-2">Preferences</h3>
+          <p className="text-[13px] text-text-muted font-light mb-4">
+            Set your default currency and exchange.
+          </p>
+
+          <div className="mb-4">
+            <label className="block text-[11px] text-text-muted font-medium uppercase tracking-wider mb-1.5">
+              Default Currency
+            </label>
+            <select
+              value={defaultCurrency}
+              onChange={(e) => {
+                setDefaultCurrency(e.target.value);
+                localStorage.setItem("pnlab_default_currency", e.target.value);
+              }}
+              className="w-full px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent"
+            >
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="BTC">BTC</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[11px] text-text-muted font-medium uppercase tracking-wider mb-1.5">
+              Default Exchange
+            </label>
+            <select
+              value={defaultExchange}
+              onChange={(e) => {
+                setDefaultExchange(e.target.value);
+                localStorage.setItem("pnlab_default_exchange", e.target.value);
+              }}
+              className="w-full px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent"
+            >
+              <option value="Binance">Binance</option>
+              <option value="Bybit">Bybit</option>
+              <option value="Hyperliquid">Hyperliquid</option>
+              <option value="Coinbase">Coinbase</option>
+              <option value="Kraken">Kraken</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

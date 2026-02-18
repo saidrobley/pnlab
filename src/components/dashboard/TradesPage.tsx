@@ -11,6 +11,7 @@ const emptyFilters: TradeFilters = {
   symbol: "",
   direction: "",
   strategy: "",
+  exchange: "",
   dateFrom: "",
   dateTo: "",
 };
@@ -53,6 +54,7 @@ export default function TradesPage() {
           .includes(filters.strategy.toLowerCase())
       )
         return false;
+      if (filters.exchange && t.exchange !== filters.exchange) return false;
       if (filters.dateFrom) {
         const tradeDate = new Date(t.opened_at).toISOString().slice(0, 10);
         if (tradeDate < filters.dateFrom) return false;

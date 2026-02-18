@@ -9,9 +9,7 @@ export default function CTA({ onOpenModal }: CTAProps) {
     <section className="px-10 py-[120px] text-center relative">
       <div className="absolute w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(34,197,94,0.06),transparent_70%)] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <h2 className="font-serif text-[clamp(36px,5vw,64px)] font-normal tracking-tight mb-5 relative">
-        Stop guessing.
-        <br />
-        Start knowing.
+        Ready to find your edge?
       </h2>
       <p className="text-text-muted text-sm mb-10 font-light relative">
         Join the waitlist and be first to find your edge.
