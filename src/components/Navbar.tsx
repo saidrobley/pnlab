@@ -32,6 +32,18 @@ export default function Navbar({ onOpenModal }: NavbarProps) {
         >
           How It Works
         </a>
+        <a
+          href="/login"
+          className="text-text-muted text-[13px] no-underline transition-colors hover:text-text max-md:hidden"
+        >
+          Log In
+        </a>
+        <a
+          href="/signup"
+          className="border border-border px-4 py-1.5 rounded-lg text-text-muted text-[13px] no-underline transition-colors hover:text-text hover:border-text-muted max-md:hidden"
+        >
+          Sign Up
+        </a>
         <button
           className="bg-text text-bg border-none px-6 py-2.5 rounded-lg font-mono text-[13px] font-semibold cursor-pointer transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)]"
           onClick={onOpenModal}

@@ -21,8 +21,8 @@ export default function Hero({ onOpenModal }: HeroProps) {
         </em>
       </h1>
       <p className="text-base text-text-muted text-center max-w-[480px] leading-[1.7] mb-12 font-light animate-[fadeUp_0.8s_ease-out_0.2s_both]">
-        Log every trade. Spot hidden patterns. Get AI-powered insights that
-        actually make you a better trader.
+        Log every trade. Analyze your performance. Understand what&apos;s actually
+        working.
       </p>
       <div className="flex gap-4 animate-[fadeUp_0.8s_ease-out_0.3s_both]">
         <button
@@ -31,10 +31,16 @@ export default function Hero({ onOpenModal }: HeroProps) {
         >
           Join the Waitlist
         </button>
-        <button className="bg-transparent text-text border border-border px-6 py-2.5 rounded-lg font-mono text-[13px] font-medium cursor-pointer transition-all hover:border-text-muted hover:bg-bg-elevated">
+        <a
+          href="#how"
+          className="text-text-muted text-[13px] font-medium no-underline transition-colors hover:text-text"
+        >
           See How It Works &darr;
-        </button>
+        </a>
       </div>
+      <p className="text-text-muted text-[13px] font-light mt-5 animate-[fadeUp_0.8s_ease-out_0.3s_both]">
+        Join 200+ traders on the waitlist
+      </p>
     </section>
   );
 }
