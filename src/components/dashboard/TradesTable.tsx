@@ -108,7 +108,7 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                   {trade.strategy || "—"}
                 </td>
                 <td className="px-3 py-2 md:px-4 md:py-3 font-light text-text-muted">
-                  {trade.exchange || "—"}
+                  {trade.exchange}
                 </td>
                 <td className="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap">
                   <button

@@ -20,7 +20,7 @@ const emptyForm: TradeFormData = {
   fees: "0",
   pnl: "",
   strategy: "",
-  exchange: "",
+  exchange: "Binance",
   opened_at: new Date().toISOString().slice(0, 16),
   closed_at: new Date().toISOString().slice(0, 16),
   notes: "",
@@ -40,7 +40,7 @@ function tradeToForm(trade: Trade): TradeFormData {
     fees: String(trade.fees),
     pnl: trade.pnl !== null ? String(trade.pnl) : "",
     strategy: trade.strategy || "",
-    exchange: trade.exchange || "",
+    exchange: trade.exchange || "Binance",
     opened_at: trade.opened_at ? new Date(trade.opened_at).toISOString().slice(0, 16) : "",
     closed_at: trade.closed_at ? new Date(trade.closed_at).toISOString().slice(0, 16) : "",
     notes: trade.notes || "",
@@ -134,7 +134,7 @@ export default function TradeModal({
       fees: parseFloat(form.fees) || 0,
       pnl: form.pnl ? parseFloat(form.pnl) : null,
       strategy: form.strategy || null,
-      exchange: form.exchange || null,
+      exchange: form.exchange,
       opened_at: new Date(form.opened_at).toISOString(),
       closed_at: form.closed_at
         ? new Date(form.closed_at).toISOString()
@@ -267,19 +267,22 @@ export default function TradeModal({
                 type="text"
                 value={form.strategy}
                 onChange={(e) => update("strategy", e.target.value)}
-                placeholder="e.g. Breakout, Scalp..."
+                placeholder="e.g. Scalp, Swing"
                 className={inputClass}
               />
             </div>
             <div>
-              <label className={labelClass}>Exchange</label>
-              <input
-                type="text"
+              <label className={labelClass}>Exchange *</label>
+              <select
                 value={form.exchange}
                 onChange={(e) => update("exchange", e.target.value)}
-                placeholder="e.g. Binance, Bybit..."
+                required
                 className={inputClass}
-              />
+              >
+                {["Binance", "Bybit", "Hyperliquid", "Coinbase", "Kraken", "Other"].map((ex) => (
+                  <option key={ex} value={ex}>{ex}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className={labelClass}>Opened At *</label>
