@@ -1162,7 +1162,9 @@
             const formData = new FormData();
             formData.append('email', email);
             formData.append('trades', trades);
-            await fetch('https://forminit.com/f/euswor74vc9', {
+            formData.append('_captcha', 'false');
+            formData.append('_template', 'table');
+            await fetch('https://formsubmit.co/ajax/saidrobley@gmail.com', {
               method: 'POST',
               body: formData,
             });
