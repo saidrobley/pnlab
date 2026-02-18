@@ -2,84 +2,60 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { createBrowserClient } from "@/lib/supabase";
-import { Strategy, Trade } from "@/lib/types";
+import { Trade } from "@/lib/types";
+import { computeStats } from "@/lib/stats";
+import type { PnlStats } from "@/lib/types";
 
-interface StrategyWithStats extends Strategy {
-  tradeCount: number;
-  totalPnl: number;
+interface StrategyGroup {
+  name: string;
+  stats: PnlStats;
+}
+
+function pnlColor(value: number) {
+  return value > 0 ? "text-green" : value < 0 ? "text-red" : "text-text";
+}
+
+function formatPnl(value: number) {
+  const sign = value >= 0 ? "+" : "";
+  return `${sign}$${value.toFixed(2)}`;
 }
 
 export default function StrategiesPage() {
-  const [strategies, setStrategies] = useState<StrategyWithStats[]>([]);
+  const [groups, setGroups] = useState<StrategyGroup[]>([]);
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [saving, setSaving] = useState(false);
 
-  const fetchStrategies = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     const supabase = createBrowserClient();
+    const { data: trades } = await supabase
+      .from("trades")
+      .select("*")
+      .is("deleted_at", null)
+      .not("pnl", "is", null);
 
-    const [{ data: strats }, { data: trades }] = await Promise.all([
-      supabase
-        .from("strategies")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      supabase.from("trades").select("strategy, pnl").is("deleted_at", null),
-    ]);
-
-    const tradesByStrategy: Record<string, { count: number; pnl: number }> = {};
-    for (const t of (trades as Pick<Trade, "strategy" | "pnl">[]) || []) {
-      if (t.strategy) {
-        if (!tradesByStrategy[t.strategy]) {
-          tradesByStrategy[t.strategy] = { count: 0, pnl: 0 };
-        }
-        tradesByStrategy[t.strategy].count++;
-        tradesByStrategy[t.strategy].pnl += t.pnl || 0;
-      }
+    if (!trades || trades.length === 0) {
+      setGroups([]);
+      setLoading(false);
+      return;
     }
 
-    const enriched: StrategyWithStats[] = ((strats as Strategy[]) || []).map(
-      (s) => ({
-        ...s,
-        tradeCount: tradesByStrategy[s.name]?.count || 0,
-        totalPnl: Math.round((tradesByStrategy[s.name]?.pnl || 0) * 100) / 100,
-      })
-    );
+    const grouped: Record<string, Trade[]> = {};
+    for (const t of trades as Trade[]) {
+      const key = t.strategy?.trim() || "Untagged";
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(t);
+    }
 
-    setStrategies(enriched);
+    const result: StrategyGroup[] = Object.entries(grouped)
+      .map(([name, trades]) => ({ name, stats: computeStats(trades) }))
+      .sort((a, b) => b.stats.totalTrades - a.stats.totalTrades);
+
+    setGroups(result);
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    fetchStrategies();
-  }, [fetchStrategies]);
-
-  async function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    setSaving(true);
-
-    const supabase = createBrowserClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      setSaving(false);
-      return;
-    }
-
-    await supabase.from("strategies").insert({
-      user_id: user.id,
-      name: name.trim(),
-      description: description.trim() || null,
-    });
-
-    setName("");
-    setDescription("");
-    setSaving(false);
-    fetchStrategies();
-  }
+    fetchData();
+  }, [fetchData]);
 
   if (loading) {
     return (
@@ -93,83 +69,88 @@ export default function StrategiesPage() {
     <div>
       <h1 className="font-serif text-2xl md:text-3xl mb-1">Strategies</h1>
       <p className="text-text-muted text-[13px] font-light mb-6 md:mb-8">
-        Define and track your trading strategies
+        Performance breakdown by trading strategy
       </p>
 
-      {/* Add form */}
-      <form
-        onSubmit={handleAdd}
-        className="bg-bg-card border border-border rounded-2xl p-5 mb-6"
-      >
-        <h3 className="text-[13px] font-semibold mb-4">Add Strategy</h3>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            type="text"
-            placeholder="Strategy name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="flex-1 px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent"
-          />
-          <input
-            type="text"
-            placeholder="Description (optional)"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="sm:flex-[2] px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent"
-          />
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-5 py-2.5 bg-text text-bg border-none rounded-lg font-mono text-[13px] font-semibold cursor-pointer transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)] disabled:opacity-50 shrink-0"
-          >
-            {saving ? "Adding..." : "Add"}
-          </button>
-        </div>
-      </form>
-
-      {/* Strategy cards */}
-      {strategies.length === 0 ? (
+      {groups.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-2xl p-12 text-center">
           <p className="text-text-muted text-[13px] font-light">
-            No strategies yet. Add one above to start tracking performance by
-            strategy.
+            No closed trades yet. Strategy stats will appear here once you have
+            trades with P&L.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {strategies.map((s) => (
+          {groups.map((g) => (
             <div
-              key={s.id}
+              key={g.name}
               className="bg-bg-card border border-border rounded-2xl p-5"
             >
-              <h3 className="text-[15px] font-semibold mb-1">{s.name}</h3>
-              {s.description && (
-                <p className="text-[13px] text-text-muted font-light mb-3">
-                  {s.description}
-                </p>
-              )}
-              <div className="flex gap-4 mt-3 pt-3 border-t border-border">
+              <h3
+                className={`text-[15px] font-semibold mb-4 ${
+                  g.name === "Untagged"
+                    ? "text-text-muted italic font-normal"
+                    : ""
+                }`}
+              >
+                {g.name}
+              </h3>
+
+              <div className="grid grid-cols-3 gap-x-4 gap-y-3">
                 <div>
                   <div className="text-[11px] text-text-muted uppercase tracking-wider">
                     Trades
                   </div>
-                  <div className="text-sm font-medium">{s.tradeCount}</div>
+                  <div className="text-sm font-medium">
+                    {g.stats.totalTrades}
+                  </div>
                 </div>
                 <div>
                   <div className="text-[11px] text-text-muted uppercase tracking-wider">
-                    P&L
+                    Win Rate
+                  </div>
+                  <div className="text-sm font-medium">
+                    {g.stats.winRate.toFixed(1)}%
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] text-text-muted uppercase tracking-wider">
+                    Total P&L
                   </div>
                   <div
-                    className={`text-sm font-medium ${
-                      s.totalPnl > 0
-                        ? "text-green"
-                        : s.totalPnl < 0
-                        ? "text-red"
-                        : "text-text"
-                    }`}
+                    className={`text-sm font-medium ${pnlColor(g.stats.totalPnl)}`}
                   >
-                    {s.totalPnl >= 0 ? "+" : ""}${s.totalPnl.toFixed(2)}
+                    {formatPnl(g.stats.totalPnl)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] text-text-muted uppercase tracking-wider">
+                    Avg Win
+                  </div>
+                  <div
+                    className={`text-sm font-medium ${pnlColor(g.stats.avgWin)}`}
+                  >
+                    {formatPnl(g.stats.avgWin)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] text-text-muted uppercase tracking-wider">
+                    Avg Loss
+                  </div>
+                  <div
+                    className={`text-sm font-medium ${pnlColor(g.stats.avgLoss)}`}
+                  >
+                    {formatPnl(g.stats.avgLoss)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] text-text-muted uppercase tracking-wider">
+                    Best Trade
+                  </div>
+                  <div
+                    className={`text-sm font-medium ${pnlColor(g.stats.bestTrade)}`}
+                  >
+                    {formatPnl(g.stats.bestTrade)}
                   </div>
                 </div>
               </div>
