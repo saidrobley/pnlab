@@ -1159,10 +1159,12 @@
         const trades = document.getElementById('trade-input').value;
         if (email) {
           try {
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('trades', trades);
             await fetch('https://forminit.com/f/euswor74vc9', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, trades }),
+              body: formData,
             });
           } catch (e) {}
           document.querySelector('.modal').innerHTML = `
