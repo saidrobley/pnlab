@@ -14,7 +14,7 @@ export default function Header({ email, onMenuClick }: HeaderProps) {
   async function handleLogout() {
     const supabase = createBrowserClient();
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/");
     router.refresh();
   }
 

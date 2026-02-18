@@ -74,7 +74,7 @@ export default function SettingsPage({ email }: SettingsPageProps) {
   async function handleSignOut() {
     const supabase = createBrowserClient();
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/");
     router.refresh();
   }
 
