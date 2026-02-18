@@ -4,6 +4,8 @@ import { Trade } from "@/lib/types";
 
 interface TradesTableProps {
   trades: Trade[];
+  onEdit: (trade: Trade) => void;
+  onDelete: (trade: Trade) => void;
 }
 
 function formatDate(dateStr: string | null): string {
@@ -21,7 +23,7 @@ function formatUsd(value: number | null): string {
   return `${prefix}${Math.abs(value).toFixed(2)}`;
 }
 
-export default function TradesTable({ trades }: TradesTableProps) {
+export default function TradesTable({ trades, onEdit, onDelete }: TradesTableProps) {
   if (trades.length === 0) {
     return (
       <div className="bg-bg-card border border-border rounded-2xl p-12 text-center">
@@ -49,9 +51,10 @@ export default function TradesTable({ trades }: TradesTableProps) {
                 "Fees",
                 "Strategy",
                 "Exchange",
-              ].map((h) => (
+                "",
+              ].map((h, i) => (
                 <th
-                  key={h}
+                  key={i}
                   className="text-left px-4 py-3 text-[11px] text-text-muted font-medium uppercase tracking-wider"
                 >
                   {h}
@@ -106,6 +109,20 @@ export default function TradesTable({ trades }: TradesTableProps) {
                 </td>
                 <td className="px-4 py-3 font-light text-text-muted">
                   {trade.exchange || "—"}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <button
+                    onClick={() => onEdit(trade)}
+                    className="text-text-muted hover:text-text text-[12px] font-medium mr-3 transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => onDelete(trade)}
+                    className="text-text-muted hover:text-red text-[12px] font-medium transition-colors"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

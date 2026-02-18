@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createBrowserClient } from "@/lib/supabase";
-import { TradeFormData } from "@/lib/types";
+import { Trade, TradeFormData } from "@/lib/types";
 
-interface AddTradeModalProps {
+interface TradeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSaved: () => void;
+  trade?: Trade | null;
 }
 
 const emptyForm: TradeFormData = {
@@ -29,11 +30,30 @@ const inputClass =
   "w-full px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent";
 const labelClass = "block text-[11px] text-text-muted font-medium uppercase tracking-wider mb-1.5";
 
-export default function AddTradeModal({
+function tradeToForm(trade: Trade): TradeFormData {
+  return {
+    symbol: trade.symbol,
+    direction: trade.direction,
+    entry_price: String(trade.entry_price),
+    exit_price: trade.exit_price !== null ? String(trade.exit_price) : "",
+    size: String(trade.size),
+    fees: String(trade.fees),
+    pnl: trade.pnl !== null ? String(trade.pnl) : "",
+    strategy: trade.strategy || "",
+    exchange: trade.exchange || "",
+    opened_at: trade.opened_at ? new Date(trade.opened_at).toISOString().slice(0, 16) : "",
+    closed_at: trade.closed_at ? new Date(trade.closed_at).toISOString().slice(0, 16) : "",
+    notes: trade.notes || "",
+  };
+}
+
+export default function TradeModal({
   isOpen,
   onClose,
   onSaved,
-}: AddTradeModalProps) {
+  trade,
+}: TradeModalProps) {
+  const isEdit = !!trade;
   const [form, setForm] = useState<TradeFormData>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -56,14 +76,18 @@ export default function AddTradeModal({
   // Reset form when opening
   useEffect(() => {
     if (isOpen) {
-      setForm({
-        ...emptyForm,
-        opened_at: new Date().toISOString().slice(0, 16),
-        closed_at: new Date().toISOString().slice(0, 16),
-      });
+      if (trade) {
+        setForm(tradeToForm(trade));
+      } else {
+        setForm({
+          ...emptyForm,
+          opened_at: new Date().toISOString().slice(0, 16),
+          closed_at: new Date().toISOString().slice(0, 16),
+        });
+      }
       setError("");
     }
-  }, [isOpen]);
+  }, [isOpen, trade]);
 
   // Auto-calculate PnL
   useEffect(() => {
@@ -101,8 +125,7 @@ export default function AddTradeModal({
       return;
     }
 
-    const { error: insertError } = await supabase.from("trades").insert({
-      user_id: user.id,
+    const payload = {
       symbol: form.symbol.toUpperCase(),
       direction: form.direction,
       entry_price: parseFloat(form.entry_price),
@@ -117,12 +140,30 @@ export default function AddTradeModal({
         ? new Date(form.closed_at).toISOString()
         : null,
       notes: form.notes || null,
-    });
+    };
 
-    if (insertError) {
-      setError(insertError.message);
-      setSaving(false);
-      return;
+    if (isEdit && trade) {
+      const { error: updateError } = await supabase
+        .from("trades")
+        .update(payload)
+        .eq("id", trade.id);
+
+      if (updateError) {
+        setError(updateError.message);
+        setSaving(false);
+        return;
+      }
+    } else {
+      const { error: insertError } = await supabase.from("trades").insert({
+        user_id: user.id,
+        ...payload,
+      });
+
+      if (insertError) {
+        setError(insertError.message);
+        setSaving(false);
+        return;
+      }
     }
 
     setSaving(false);
@@ -138,7 +179,9 @@ export default function AddTradeModal({
       onClick={handleOverlayClick}
     >
       <div className="bg-bg-card border border-border rounded-2xl p-8 max-w-[600px] w-[90%] max-h-[90vh] overflow-y-auto">
-        <h3 className="font-serif text-2xl mb-6">Add Trade</h3>
+        <h3 className="font-serif text-2xl mb-6">
+          {isEdit ? "Edit Trade" : "Add Trade"}
+        </h3>
 
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
@@ -286,7 +329,7 @@ export default function AddTradeModal({
               disabled={saving}
               className="px-5 py-2.5 bg-text text-bg border-none rounded-lg font-mono text-[13px] font-semibold cursor-pointer transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? "Saving..." : "Save Trade"}
+              {saving ? "Saving..." : isEdit ? "Update Trade" : "Save Trade"}
             </button>
           </div>
         </form>

@@ -5,7 +5,7 @@ import { createBrowserClient } from "@/lib/supabase";
 import { Trade, TradeFilters } from "@/lib/types";
 import TradesToolbar from "./TradesToolbar";
 import TradesTable from "./TradesTable";
-import AddTradeModal from "./AddTradeModal";
+import TradeModal from "./TradeModal";
 
 const emptyFilters: TradeFilters = {
   symbol: "",
@@ -20,12 +20,14 @@ export default function TradesPage() {
   const [filters, setFilters] = useState<TradeFilters>(emptyFilters);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
 
   const fetchTrades = useCallback(async () => {
     const supabase = createBrowserClient();
     const { data } = await supabase
       .from("trades")
       .select("*")
+      .is("deleted_at", null)
       .order("opened_at", { ascending: false });
 
     setTrades((data as Trade[]) || []);
@@ -63,6 +65,30 @@ export default function TradesPage() {
     });
   }, [trades, filters]);
 
+  function handleEdit(trade: Trade) {
+    setEditingTrade(trade);
+    setModalOpen(true);
+  }
+
+  async function handleDelete(trade: Trade) {
+    if (!window.confirm(`Delete trade ${trade.symbol} (${trade.direction})?`)) {
+      return;
+    }
+
+    const supabase = createBrowserClient();
+    await supabase
+      .from("trades")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", trade.id);
+
+    fetchTrades();
+  }
+
+  function handleModalClose() {
+    setModalOpen(false);
+    setEditingTrade(null);
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -89,12 +115,17 @@ export default function TradesPage() {
       </div>
 
       <TradesToolbar filters={filters} onChange={setFilters} />
-      <TradesTable trades={filteredTrades} />
+      <TradesTable
+        trades={filteredTrades}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
-      <AddTradeModal
+      <TradeModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={handleModalClose}
         onSaved={fetchTrades}
+        trade={editingTrade}
       />
     </div>
   );

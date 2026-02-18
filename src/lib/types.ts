@@ -11,6 +11,8 @@ export interface Trade {
   strategy: string | null;
   notes: string | null;
   exchange: string | null;
+  source: string;
+  deleted_at: string | null;
   opened_at: string;
   closed_at: string | null;
   created_at: string;

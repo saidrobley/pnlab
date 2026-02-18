@@ -24,7 +24,7 @@ export default function StrategiesPage() {
         .from("strategies")
         .select("*")
         .order("created_at", { ascending: false }),
-      supabase.from("trades").select("strategy, pnl"),
+      supabase.from("trades").select("strategy, pnl").is("deleted_at", null),
     ]);
 
     const tradesByStrategy: Record<string, { count: number; pnl: number }> = {};

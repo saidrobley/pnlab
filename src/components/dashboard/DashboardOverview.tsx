@@ -23,6 +23,7 @@ export default function DashboardOverview() {
       const { data } = await supabase
         .from("trades")
         .select("*")
+        .is("deleted_at", null)
         .not("pnl", "is", null)
         .order("closed_at", { ascending: true });
 
