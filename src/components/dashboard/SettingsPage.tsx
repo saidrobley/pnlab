@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { createBrowserClient } from "@/lib/supabase";
 
@@ -10,7 +9,6 @@ interface SettingsPageProps {
 }
 
 export default function SettingsPage({ email }: SettingsPageProps) {
-  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [displayName, setDisplayName] = useState("");
@@ -71,13 +69,6 @@ export default function SettingsPage({ email }: SettingsPageProps) {
     setTimeout(() => setSaved(false), 2000);
   }
 
-  async function handleSignOut() {
-    const supabase = createBrowserClient();
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  }
-
   const themeOptions = [
     { value: "dark", label: "Dark" },
     { value: "light", label: "Light" },
@@ -122,6 +113,9 @@ export default function SettingsPage({ email }: SettingsPageProps) {
               disabled
               className="w-full px-3 py-2.5 bg-bg border border-border rounded-lg text-text-muted font-mono text-[13px] cursor-not-allowed"
             />
+            <p className="text-[11px] text-text-muted font-light mt-1">
+              Email cannot be changed.
+            </p>
           </div>
 
           {createdAt && (
@@ -162,22 +156,7 @@ export default function SettingsPage({ email }: SettingsPageProps) {
               ))}
             </div>
           )}
-        </div>
-
-        {/* Sign out */}
-        <div className="bg-bg-card border border-border rounded-2xl p-4 md:p-6">
-          <h3 className="text-[15px] font-semibold mb-2">Sign Out</h3>
-          <p className="text-[13px] text-text-muted font-light mb-4">
-            Sign out of your account on this device.
-          </p>
-          <button
-            onClick={handleSignOut}
-            className="px-5 py-2.5 bg-transparent text-red border border-red/30 rounded-lg font-mono text-[13px] font-medium cursor-pointer transition-all hover:bg-red-dim"
-          >
-            Sign Out
-          </button>
-        </div>
-      </div>
+        </div>      </div>
     </div>
   );
 }
