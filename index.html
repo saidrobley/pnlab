@@ -1154,9 +1154,17 @@
         if (e.target === this) this.classList.remove('active');
       });
 
-      function submitWaitlist() {
+      async function submitWaitlist() {
         const email = document.getElementById('email-input').value;
+        const trades = document.getElementById('trade-input').value;
         if (email) {
+          try {
+            await fetch('https://forminit.com/f/euswor74vc9', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, trades }),
+            });
+          } catch (e) {}
           document.querySelector('.modal').innerHTML = `
         <div style="font-size:48px;margin-bottom:16px;">✓</div>
         <h3>You're in!</h3>
