@@ -32,21 +32,6 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
   async function handleSubmit() {
     if (!email) return;
     try {
-      const formData = new FormData();
-      formData.append("email", email);
-      formData.append("trades", trades);
-      formData.append("_captcha", "false");
-      formData.append("_template", "table");
-      await fetch("https://formsubmit.co/ajax/saidrobley@gmail.com", {
-        method: "POST",
-        body: formData,
-      });
-    } catch {
-      // still show success
-    }
-
-    // Insert into Supabase waitlist and get real position
-    try {
       const supabase = createBrowserClient();
       await supabase.from("waitlist").upsert(
         { email, trades },
@@ -57,7 +42,6 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
         .select("*", { count: "exact", head: true });
       setWaitlistPosition(count ?? 0);
     } catch {
-      // fallback position
       setWaitlistPosition(0);
     }
     setSubmitted(true);
