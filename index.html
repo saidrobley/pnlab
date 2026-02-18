@@ -1,1 +1,1178 @@
-404: Not Found
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PnLab — Find Your Trading Edge</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0b;
+        --bg-card: #111113;
+        --bg-elevated: #18181b;
+        --border: #27272a;
+        --text: #fafafa;
+        --text-muted: #71717a;
+        --text-dim: #52525b;
+        --green: #22c55e;
+        --green-dim: rgba(34, 197, 94, 0.15);
+        --red: #ef4444;
+        --red-dim: rgba(239, 68, 68, 0.15);
+        --accent: #a78bfa;
+        --accent-dim: rgba(167, 139, 250, 0.12);
+        --yellow: #facc15;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'JetBrains Mono', monospace;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Noise overlay ── */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* ── Grid background ── */
+      .grid-bg {
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(167, 139, 250, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(167, 139, 250, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+      }
+
+      /* ── Nav ── */
+      nav {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10, 10, 11, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo-mark {
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, var(--green), var(--accent));
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 13px;
+        transition: color 0.2s;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+      }
+
+      .btn-primary {
+        background: var(--text);
+        color: var(--bg);
+        border: none;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-outline:hover {
+        border-color: var(--text-muted);
+        background: var(--bg-elevated);
+      }
+
+      /* ── Hero ── */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 120px 40px 80px;
+        position: relative;
+      }
+
+      .hero-glow {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(167, 139, 250, 0.08),
+          transparent 70%
+        );
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 32px;
+        animation: fadeUp 0.8s ease-out;
+      }
+
+      .badge-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--green);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      h1 {
+        font-family: 'Instrument Serif', serif;
+        font-size: clamp(48px, 8vw, 96px);
+        font-weight: 400;
+        text-align: center;
+        line-height: 1.05;
+        letter-spacing: -2px;
+        margin-bottom: 24px;
+        animation: fadeUp 0.8s ease-out 0.1s both;
+      }
+
+      h1 em {
+        font-style: italic;
+        background: linear-gradient(135deg, var(--green), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-sub {
+        font-size: 16px;
+        color: var(--text-muted);
+        text-align: center;
+        max-width: 480px;
+        line-height: 1.7;
+        margin-bottom: 48px;
+        font-weight: 300;
+        animation: fadeUp 0.8s ease-out 0.2s both;
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 16px;
+        animation: fadeUp 0.8s ease-out 0.3s both;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Live Terminal Preview ── */
+      .terminal-preview {
+        margin-top: 80px;
+        width: 100%;
+        max-width: 900px;
+        animation: fadeUp 0.8s ease-out 0.5s both;
+      }
+
+      .terminal {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.03),
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 120px rgba(167, 139, 250, 0.05);
+      }
+
+      .terminal-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .terminal-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .terminal-dots span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+
+      .terminal-dots span:first-child {
+        background: #ef4444;
+      }
+      .terminal-dots span:nth-child(2) {
+        background: #facc15;
+      }
+      .terminal-dots span:last-child {
+        background: #22c55e;
+      }
+
+      .terminal-title {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-left: 8px;
+      }
+
+      .terminal-body {
+        padding: 24px;
+        font-size: 13px;
+        line-height: 2;
+      }
+
+      .t-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        opacity: 0;
+        animation: terminalLine 0.4s ease-out forwards;
+      }
+
+      .t-row:nth-child(1) {
+        animation-delay: 0.8s;
+      }
+      .t-row:nth-child(2) {
+        animation-delay: 1s;
+      }
+      .t-row:nth-child(3) {
+        animation-delay: 1.2s;
+      }
+      .t-row:nth-child(4) {
+        animation-delay: 1.4s;
+      }
+      .t-row:nth-child(5) {
+        animation-delay: 1.6s;
+      }
+      .t-row:nth-child(6) {
+        animation-delay: 1.8s;
+      }
+      .t-row:nth-child(7) {
+        animation-delay: 2s;
+      }
+      .t-row:nth-child(8) {
+        animation-delay: 2.2s;
+      }
+
+      @keyframes terminalLine {
+        from {
+          opacity: 0;
+          transform: translateX(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .t-label {
+        color: var(--text-dim);
+      }
+      .t-value {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .t-green {
+        color: var(--green);
+      }
+      .t-red {
+        color: var(--red);
+      }
+      .t-accent {
+        color: var(--accent);
+      }
+      .t-yellow {
+        color: var(--yellow);
+      }
+
+      .t-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 12px 0;
+        opacity: 0;
+        animation: terminalLine 0.4s ease-out 1.6s forwards;
+      }
+
+      .t-insight {
+        margin-top: 12px;
+        padding: 12px 16px;
+        background: var(--accent-dim);
+        border: 1px solid rgba(167, 139, 250, 0.2);
+        border-radius: 8px;
+        font-size: 12px;
+        color: var(--accent);
+        line-height: 1.6;
+        opacity: 0;
+        animation: terminalLine 0.6s ease-out 2.4s forwards;
+      }
+
+      .t-insight::before {
+        content: '💡 AI INSIGHT';
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+        opacity: 0.7;
+      }
+
+      /* ── Features Section ── */
+      .features {
+        padding: 120px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 16px;
+      }
+
+      .features h2 {
+        font-family: 'Instrument Serif', serif;
+        font-size: clamp(32px, 5vw, 56px);
+        font-weight: 400;
+        letter-spacing: -1px;
+        margin-bottom: 64px;
+        max-width: 600px;
+        line-height: 1.15;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .feature-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .feature-card:hover {
+        border-color: rgba(167, 139, 250, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      .feature-icon {
+        font-size: 28px;
+        margin-bottom: 20px;
+        display: block;
+      }
+
+      .feature-card h3 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        letter-spacing: -0.3px;
+      }
+
+      .feature-card p {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.7;
+        font-weight: 300;
+      }
+
+      /* ── Stats Bar ── */
+      .stats-bar {
+        padding: 60px 40px;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .stats-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .stat {
+        text-align: center;
+      }
+
+      .stat-value {
+        font-family: 'Instrument Serif', serif;
+        font-size: 48px;
+        font-weight: 400;
+        letter-spacing: -1px;
+      }
+
+      .stat-value .green {
+        color: var(--green);
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-top: 4px;
+      }
+
+      /* ── How It Works ── */
+      .how-it-works {
+        padding: 120px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .how-it-works h2 {
+        font-family: 'Instrument Serif', serif;
+        font-size: clamp(32px, 5vw, 56px);
+        font-weight: 400;
+        letter-spacing: -1px;
+        margin-bottom: 64px;
+        line-height: 1.15;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+      }
+
+      .step {
+        position: relative;
+      }
+
+      .step-number {
+        font-family: 'Instrument Serif', serif;
+        font-size: 72px;
+        color: var(--bg-elevated);
+        line-height: 1;
+        margin-bottom: 16px;
+        -webkit-text-stroke: 1px var(--border);
+      }
+
+      .step h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .step p {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.7;
+        font-weight: 300;
+      }
+
+      /* ── Pricing ── */
+      .pricing {
+        padding: 120px 40px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .pricing h2 {
+        font-family: 'Instrument Serif', serif;
+        font-size: clamp(32px, 5vw, 56px);
+        font-weight: 400;
+        letter-spacing: -1px;
+        margin-bottom: 16px;
+        text-align: center;
+      }
+
+      .pricing-sub {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 48px;
+        font-weight: 300;
+      }
+
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .price-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 36px;
+      }
+
+      .price-card.featured {
+        border-color: var(--accent);
+        position: relative;
+      }
+
+      .price-card.featured::before {
+        content: 'POPULAR';
+        position: absolute;
+        top: -11px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--accent);
+        color: var(--bg);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 3px 12px;
+        border-radius: 100px;
+      }
+
+      .price-tier {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+
+      .price-amount {
+        font-family: 'Instrument Serif', serif;
+        font-size: 48px;
+        margin-bottom: 4px;
+      }
+
+      .price-amount span {
+        font-size: 16px;
+        color: var(--text-dim);
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .price-period {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-bottom: 24px;
+      }
+
+      .price-features {
+        list-style: none;
+        margin-bottom: 32px;
+      }
+
+      .price-features li {
+        font-size: 13px;
+        color: var(--text-muted);
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(39, 39, 42, 0.5);
+        font-weight: 300;
+      }
+
+      .price-features li::before {
+        content: '✓ ';
+        color: var(--green);
+        font-weight: 600;
+      }
+
+      .price-card .btn-primary,
+      .price-card .btn-outline {
+        width: 100%;
+        text-align: center;
+      }
+
+      /* ── CTA ── */
+      .cta {
+        padding: 120px 40px;
+        text-align: center;
+        position: relative;
+      }
+
+      .cta-glow {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(34, 197, 94, 0.06),
+          transparent 70%
+        );
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+
+      .cta h2 {
+        font-family: 'Instrument Serif', serif;
+        font-size: clamp(36px, 5vw, 64px);
+        font-weight: 400;
+        letter-spacing: -1px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .cta p {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 40px;
+        font-weight: 300;
+        position: relative;
+      }
+
+      .cta .hero-cta {
+        justify-content: center;
+        position: relative;
+      }
+
+      /* ── Footer ── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+
+      footer a {
+        color: var(--text-muted);
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        color: var(--text);
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 24px;
+      }
+
+      /* ── Waitlist Modal ── */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px;
+        max-width: 420px;
+        width: 90%;
+        text-align: center;
+      }
+
+      .modal h3 {
+        font-family: 'Instrument Serif', serif;
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+
+      .modal p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+        font-weight: 300;
+      }
+
+      .modal input {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13px;
+        margin-bottom: 12px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .modal input:focus {
+        border-color: var(--accent);
+      }
+
+      .modal .btn-primary {
+        width: 100%;
+        padding: 14px;
+        font-size: 14px;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 768px) {
+        nav {
+          padding: 16px 20px;
+        }
+        .nav-links a:not(:last-child) {
+          display: none;
+        }
+        .hero {
+          padding: 100px 20px 60px;
+        }
+        .feature-grid {
+          grid-template-columns: 1fr;
+        }
+        .stats-inner {
+          flex-direction: column;
+          gap: 32px;
+        }
+        .steps {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        .pricing-grid {
+          grid-template-columns: 1fr;
+        }
+        .features,
+        .how-it-works,
+        .pricing {
+          padding: 80px 20px;
+        }
+        footer {
+          flex-direction: column;
+          gap: 16px;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid-bg"></div>
+
+    <!-- Nav -->
+    <nav>
+      <div class="logo">
+        <div class="logo-mark">P</div>
+        PnLab
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#how">How It Works</a>
+        <button class="btn-primary" onclick="openModal()">Join Waitlist</button>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Currently in private beta
+      </div>
+      <h1>Find your<br />trading <em>edge</em></h1>
+      <p class="hero-sub">
+        Log every trade. Spot hidden patterns. Get AI-powered insights that
+        actually make you a better trader.
+      </p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="openModal()">
+          Join the Waitlist
+        </button>
+        <button class="btn-outline">See How It Works ↓</button>
+      </div>
+
+      <!-- Terminal Preview -->
+      <div class="terminal-preview">
+        <div class="terminal">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="terminal-title">pnlab — weekly recap</span>
+          </div>
+          <div class="terminal-body">
+            <div class="t-row">
+              <span class="t-label">Period</span>
+              <span class="t-value">Feb 10 — Feb 17, 2026</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Total Trades</span>
+              <span class="t-value">47</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Win Rate</span>
+              <span class="t-green">68.1%</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Net P&L</span>
+              <span class="t-green">+$1,247.33</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Best Trade</span>
+              <span class="t-green">BTC Long → +$312.00</span>
+            </div>
+            <div class="t-row">
+              <span class="t-label">Worst Trade</span>
+              <span class="t-red">SOL Short → -$89.50</span>
+            </div>
+            <hr class="t-divider" />
+            <div class="t-row">
+              <span class="t-label">Win Rate by Hour</span>
+              <span class="t-yellow">⚠ 23% WR after midnight</span>
+            </div>
+            <div class="t-insight">
+              Your SOL short entries below $0.40 have a 34% win rate — half your
+              overall average. Consider skipping SOL shorts or raising your
+              entry threshold to $0.45+.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+      <div class="section-label">Features</div>
+      <h2>Everything a trader needs. Nothing you don't.</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3>Smart Analytics</h3>
+          <p>
+            Win rate by symbol, time of day, strategy, and entry price. See
+            where you're bleeding and where you're printing.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🔌</span>
+          <h3>Exchange Sync</h3>
+          <p>
+            Connect Binance, Bybit, Polymarket, and more with read-only API
+            keys. Trades import automatically.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🧠</span>
+          <h3>AI Insights</h3>
+          <p>
+            Weekly reports that find patterns you'd miss. "You lose 80% of
+            trades after 2am" — that kind of thing.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📈</span>
+          <h3>Equity Curve</h3>
+          <p>
+            Track your growth over time with beautiful, interactive charts. See
+            drawdowns, peaks, and recovery periods.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📥</span>
+          <h3>CSV Import</h3>
+          <p>
+            Upload trade history from any exchange. Works with any CSV format —
+            we'll auto-detect the columns.
+          </p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🏷️</span>
+          <h3>Strategy Tags</h3>
+          <p>
+            Tag trades by strategy, setup, or thesis. Compare performance across
+            different approaches.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stats-inner">
+        <div class="stat">
+          <div class="stat-value"><span class="green">15</span>+</div>
+          <div class="stat-label">Exchanges supported</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">2.4<span class="green">M</span></div>
+          <div class="stat-label">Trades analyzed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">
+            <span class="green">$</span>847<span class="green">K</span>
+          </div>
+          <div class="stat-label">Avg. edge found per user/yr</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">&lt;3<span class="green">s</span></div>
+          <div class="stat-label">Sync time</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how">
+      <div class="section-label">How It Works</div>
+      <h2>Three steps to finding your edge</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">01</div>
+          <h3>Connect Your Exchange</h3>
+          <p>
+            Link your exchange with a read-only API key, upload a CSV, or log
+            trades manually. Takes under 60 seconds.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step-number">02</div>
+          <h3>Trade Like Normal</h3>
+          <p>
+            PnLab runs in the background, syncing every trade and building a
+            complete picture of your performance.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step-number">03</div>
+          <h3>Get Smarter Weekly</h3>
+          <p>
+            Every week, PnLab surfaces the patterns, blind spots, and edges
+            hiding in your data. Act on them or ignore them — your call.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+      <div class="section-label">Pricing</div>
+      <h2>Simple pricing</h2>
+      <p class="pricing-sub">Start free. Upgrade when you're ready.</p>
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-tier">Free</div>
+          <div class="price-amount">$0</div>
+          <div class="price-period">forever</div>
+          <ul class="price-features">
+            <li>50 trades / month</li>
+            <li>Manual entry + CSV import</li>
+            <li>Basic analytics</li>
+            <li>Equity curve</li>
+            <li>1 exchange connection</li>
+          </ul>
+          <button class="btn-outline" onclick="openModal()">Get Started</button>
+        </div>
+        <div class="price-card featured">
+          <div class="price-tier">Pro</div>
+          <div class="price-amount">$12<span>/mo</span></div>
+          <div class="price-period">billed monthly · cancel anytime</div>
+          <ul class="price-features">
+            <li>Unlimited trades</li>
+            <li>Unlimited exchange connections</li>
+            <li>AI weekly insights</li>
+            <li>Advanced analytics & filters</li>
+            <li>Webhook API for bots</li>
+            <li>Export reports</li>
+          </ul>
+          <button class="btn-primary" onclick="openModal()">
+            Join Waitlist
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+      <div class="cta-glow"></div>
+      <h2>Stop guessing.<br />Start knowing.</h2>
+      <p>Join the waitlist and be first to find your edge.</p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="openModal()">
+          Join the Waitlist
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="logo" style="font-size: 16px">
+        <div
+          class="logo-mark"
+          style="width: 22px; height: 22px; font-size: 11px"
+        >
+          P
+        </div>
+        PnLab
+      </div>
+      <div class="footer-links">
+        <a href="#">Twitter</a>
+        <a href="#">Discord</a>
+        <a href="#">Blog</a>
+        <a href="#">Privacy</a>
+      </div>
+      <div>© 2026 PnLab. All rights reserved.</div>
+    </footer>
+
+    <!-- Waitlist Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <h3>Join the waitlist</h3>
+        <p>
+          Be the first to know when PnLab launches. Early access users get Pro
+          free for 3 months.
+        </p>
+        <input type="email" placeholder="Your email" id="email-input" />
+        <input
+          type="text"
+          placeholder="What do you trade? (crypto, stocks, forex...)"
+          id="trade-input"
+        />
+        <button class="btn-primary" onclick="submitWaitlist()">
+          Get Early Access
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function openModal() {
+        document.getElementById('modal').classList.add('active');
+      }
+
+      document.getElementById('modal').addEventListener('click', function (e) {
+        if (e.target === this) this.classList.remove('active');
+      });
+
+      function submitWaitlist() {
+        const email = document.getElementById('email-input').value;
+        if (email) {
+          document.querySelector('.modal').innerHTML = `
+        <div style="font-size:48px;margin-bottom:16px;">✓</div>
+        <h3>You're in!</h3>
+        <p style="color:var(--text-muted);font-size:13px;margin-top:8px;">
+          We'll email you when PnLab is ready.<br>
+          <span style="color:var(--green);">Position #${Math.floor(Math.random() * 200 + 47)} on the waitlist</span>
+        </p>
+      `;
+        }
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          document.getElementById('modal').classList.remove('active');
+        }
+      });
+    </script>
+  </body>
+</html>
