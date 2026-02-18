@@ -41,7 +41,7 @@ export function computeCumulativePnl(
     );
 
   let cumulative = 0;
-  return closed.map((t) => {
+  const points = closed.map((t) => {
     cumulative += t.pnl!;
     return {
       date: new Date(t.closed_at!).toLocaleDateString("en-US", {
@@ -51,6 +51,12 @@ export function computeCumulativePnl(
       pnl: Math.round(cumulative * 100) / 100,
     };
   });
+
+  if (points.length > 0) {
+    points.unshift({ date: "", pnl: 0 });
+  }
+
+  return points;
 }
 
 export function computePnlBySymbol(
