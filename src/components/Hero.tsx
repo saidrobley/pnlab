@@ -20,7 +20,7 @@ export default function Hero({ onOpenModal }: HeroProps) {
       });
   }, []);
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center px-10 pt-[120px] pb-20 relative max-md:px-5 max-md:pt-[100px] max-md:pb-[60px]">
+    <section className="flex flex-col items-center justify-center px-10 pt-[120px] pb-10 relative max-md:px-5 max-md:pt-[100px] max-md:pb-8">
       <div className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(167,139,250,0.08),transparent_70%)] top-[10%] left-1/2 -translate-x-1/2 pointer-events-none" />
       <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-border rounded-full text-xs text-text-muted mb-8 animate-fadeUp">
         <span className="w-1.5 h-1.5 bg-green rounded-full animate-pulse" />

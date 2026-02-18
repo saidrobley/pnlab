@@ -1,6 +1,6 @@
 export default function TerminalPreview() {
   return (
-    <div className="mt-20 w-full max-w-[900px] mx-auto px-10 animate-[fadeUp_0.8s_ease-out_0.5s_both] max-md:px-5">
+    <div className="mt-6 w-full max-w-[900px] mx-auto px-10 animate-[fadeUp_0.8s_ease-out_0.5s_both] max-md:px-5">
       <div className="bg-bg-card border border-border rounded-2xl overflow-hidden shadow-[0_0_0_1px_rgba(255,255,255,0.03),0_20px_60px_rgba(0,0,0,0.5),0_0_120px_rgba(167,139,250,0.05)]">
         <div className="px-5 py-4 border-b border-border flex items-center gap-2.5">
           <div className="flex gap-1.5">
