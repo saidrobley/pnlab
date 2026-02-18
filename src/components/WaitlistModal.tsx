@@ -31,28 +31,36 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
 
   async function handleSubmit() {
     if (!email) return;
-    const supabase = createBrowserClient();
 
     console.log("[waitlist] submitting:", { email, trades });
+    console.log("[waitlist] SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("[waitlist] ANON_KEY (first 20):", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.slice(0, 20));
 
-    const { data, error } = await supabase
-      .from("waitlist")
-      .insert({ email, trades })
-      .select();
+    try {
+      const supabase = createBrowserClient();
+      console.log("[waitlist] client created");
 
-    console.log("[waitlist] insert result:", { data, error });
+      const { error } = await supabase
+        .from("waitlist")
+        .insert({ email, trades });
 
-    if (error) {
-      console.error("[waitlist] insert error:", error.message, error.code, error.details, error.hint);
+      console.log("[waitlist] insert result:", { error });
+
+      if (error) {
+        console.error("[waitlist] insert error:", error.message, error.code, error.details, error.hint);
+      }
+
+      const { count, error: countError } = await supabase
+        .from("waitlist")
+        .select("*", { count: "exact", head: true });
+
+      console.log("[waitlist] count result:", { count, countError });
+
+      setWaitlistPosition(count ?? 0);
+    } catch (e) {
+      console.error("[waitlist] exception:", e);
+      setWaitlistPosition(0);
     }
-
-    const { count, error: countError } = await supabase
-      .from("waitlist")
-      .select("*", { count: "exact", head: true });
-
-    console.log("[waitlist] count result:", { count, countError });
-
-    setWaitlistPosition(count ?? 0);
     setSubmitted(true);
   }
 
