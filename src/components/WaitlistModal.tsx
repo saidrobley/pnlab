@@ -31,19 +31,28 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
 
   async function handleSubmit() {
     if (!email) return;
-    try {
-      const supabase = createBrowserClient();
-      await supabase.from("waitlist").upsert(
-        { email, trades },
-        { onConflict: "email" }
-      );
-      const { count } = await supabase
-        .from("waitlist")
-        .select("*", { count: "exact", head: true });
-      setWaitlistPosition(count ?? 0);
-    } catch {
-      setWaitlistPosition(0);
+    const supabase = createBrowserClient();
+
+    console.log("[waitlist] submitting:", { email, trades });
+
+    const { data, error } = await supabase
+      .from("waitlist")
+      .insert({ email, trades })
+      .select();
+
+    console.log("[waitlist] insert result:", { data, error });
+
+    if (error) {
+      console.error("[waitlist] insert error:", error.message, error.code, error.details, error.hint);
     }
+
+    const { count, error: countError } = await supabase
+      .from("waitlist")
+      .select("*", { count: "exact", head: true });
+
+    console.log("[waitlist] count result:", { count, countError });
+
+    setWaitlistPosition(count ?? 0);
     setSubmitted(true);
   }
 
