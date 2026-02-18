@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,29 +11,29 @@ const config: Config = {
     extend: {
       colors: {
         bg: {
-          DEFAULT: "#0a0a0b",
-          card: "#111113",
-          elevated: "#18181b",
+          DEFAULT: "var(--bg)",
+          card: "var(--bg-card)",
+          elevated: "var(--bg-elevated)",
         },
-        border: "#27272a",
+        border: "var(--border)",
         text: {
-          DEFAULT: "#fafafa",
-          muted: "#71717a",
-          dim: "#52525b",
+          DEFAULT: "var(--text)",
+          muted: "var(--text-muted)",
+          dim: "var(--text-dim)",
         },
         green: {
-          DEFAULT: "#22c55e",
-          dim: "rgba(34, 197, 94, 0.15)",
+          DEFAULT: "var(--green)",
+          dim: "var(--green-dim)",
         },
         red: {
-          DEFAULT: "#ef4444",
-          dim: "rgba(239, 68, 68, 0.15)",
+          DEFAULT: "var(--red)",
+          dim: "var(--red-dim)",
         },
         accent: {
-          DEFAULT: "#a78bfa",
-          dim: "rgba(167, 139, 250, 0.12)",
+          DEFAULT: "var(--accent)",
+          dim: "var(--accent-dim)",
         },
-        yellow: "#facc15",
+        yellow: "var(--yellow)",
       },
       fontFamily: {
         mono: ["var(--font-jetbrains)", "monospace"],

@@ -33,26 +33,26 @@ export default function PnlBySymbolChart({ data }: PnlBySymbolChartProps) {
       </h3>
       <ResponsiveContainer width="100%" height={250}>
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="symbol"
-            tick={{ fill: "#71717a", fontSize: 11 }}
-            axisLine={{ stroke: "#27272a" }}
+            tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+            axisLine={{ stroke: "var(--border)" }}
             tickLine={false}
           />
           <YAxis
-            tick={{ fill: "#71717a", fontSize: 11 }}
-            axisLine={{ stroke: "#27272a" }}
+            tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+            axisLine={{ stroke: "var(--border)" }}
             tickLine={false}
             tickFormatter={(v) => `$${v}`}
           />
           <Tooltip
             contentStyle={{
-              background: "#111113",
-              border: "1px solid #27272a",
+              background: "var(--bg-card)",
+              border: "1px solid var(--border)",
               borderRadius: "8px",
               fontSize: "12px",
-              color: "#fafafa",
+              color: "var(--text)",
             }}
             formatter={(value: number | undefined) => [
               value !== undefined ? `$${value.toFixed(2)}` : "$0.00",
@@ -63,7 +63,7 @@ export default function PnlBySymbolChart({ data }: PnlBySymbolChartProps) {
             {data.map((entry, index) => (
               <Cell
                 key={index}
-                fill={entry.pnl >= 0 ? "#22c55e" : "#ef4444"}
+                fill={entry.pnl >= 0 ? "var(--green)" : "var(--red)"}
               />
             ))}
           </Bar>

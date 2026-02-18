@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { createBrowserClient } from "@/lib/supabase";
 
 interface SettingsPageProps {
@@ -10,12 +11,16 @@ interface SettingsPageProps {
 
 export default function SettingsPage({ email }: SettingsPageProps) {
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [createdAt, setCreatedAt] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+
     async function fetchProfile() {
       const supabase = createBrowserClient();
       const {
@@ -73,6 +78,12 @@ export default function SettingsPage({ email }: SettingsPageProps) {
     router.refresh();
   }
 
+  const themeOptions = [
+    { value: "dark", label: "Dark" },
+    { value: "light", label: "Light" },
+    { value: "system", label: "System" },
+  ] as const;
+
   return (
     <div>
       <h1 className="font-serif text-2xl md:text-3xl mb-1">Settings</h1>
@@ -127,6 +138,31 @@ export default function SettingsPage({ email }: SettingsPageProps) {
             {saving ? "Saving..." : saved ? "Saved!" : "Save Changes"}
           </button>
         </form>
+
+        {/* Appearance */}
+        <div className="bg-bg-card border border-border rounded-2xl p-4 md:p-6">
+          <h3 className="text-[15px] font-semibold mb-2">Appearance</h3>
+          <p className="text-[13px] text-text-muted font-light mb-4">
+            Choose your preferred theme.
+          </p>
+          {mounted && (
+            <div className="flex gap-2">
+              {themeOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setTheme(opt.value)}
+                  className={`px-4 py-2 rounded-lg font-mono text-[13px] font-medium transition-colors ${
+                    theme === opt.value
+                      ? "bg-accent text-white"
+                      : "bg-bg-elevated text-text-muted hover:text-text border border-border"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Sign out */}
         <div className="bg-bg-card border border-border rounded-2xl p-4 md:p-6">

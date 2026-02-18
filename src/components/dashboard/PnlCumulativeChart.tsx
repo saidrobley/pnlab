@@ -36,30 +36,30 @@ export default function PnlCumulativeChart({
         <AreaChart data={data}>
           <defs>
             <linearGradient id="pnlGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22c55e" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+              <stop offset="0%" stopColor="var(--green)" stopOpacity={0.2} />
+              <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="date"
-            tick={{ fill: "#71717a", fontSize: 11 }}
-            axisLine={{ stroke: "#27272a" }}
+            tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+            axisLine={{ stroke: "var(--border)" }}
             tickLine={false}
           />
           <YAxis
-            tick={{ fill: "#71717a", fontSize: 11 }}
-            axisLine={{ stroke: "#27272a" }}
+            tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+            axisLine={{ stroke: "var(--border)" }}
             tickLine={false}
             tickFormatter={(v) => `$${v}`}
           />
           <Tooltip
             contentStyle={{
-              background: "#111113",
-              border: "1px solid #27272a",
+              background: "var(--bg-card)",
+              border: "1px solid var(--border)",
               borderRadius: "8px",
               fontSize: "12px",
-              color: "#fafafa",
+              color: "var(--text)",
             }}
             formatter={(value: number | undefined) => [
               value !== undefined ? `$${value.toFixed(2)}` : "$0.00",
@@ -69,7 +69,7 @@ export default function PnlCumulativeChart({
           <Area
             type="monotone"
             dataKey="pnl"
-            stroke="#22c55e"
+            stroke="var(--green)"
             strokeWidth={2}
             fill="url(#pnlGradient)"
           />

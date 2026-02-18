@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Instrument_Serif } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
 const jetbrains = JetBrains_Mono({
@@ -27,9 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${jetbrains.variable} ${instrument.variable}`}>
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="dark">
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
