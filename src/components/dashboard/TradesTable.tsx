@@ -113,15 +113,21 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                 <td className="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap">
                   <button
                     onClick={() => onEdit(trade)}
-                    className="text-text-muted hover:text-text text-[12px] font-medium mr-3 transition-colors"
+                    aria-label="Edit trade"
+                    className="text-text-muted hover:text-text p-1.5 rounded hover:bg-bg-elevated/50 transition-colors mr-1"
                   >
-                    Edit
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z" />
+                    </svg>
                   </button>
                   <button
                     onClick={() => onDelete(trade)}
-                    className="text-text-muted hover:text-red text-[12px] font-medium transition-colors"
+                    aria-label="Delete trade"
+                    className="text-text-muted hover:text-red p-1.5 rounded hover:bg-bg-elevated/50 transition-colors"
                   >
-                    Delete
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 4h12M5.333 4V2.667a1.333 1.333 0 011.334-1.334h2.666a1.333 1.333 0 011.334 1.334V4m2 0v9.333a1.333 1.333 0 01-1.334 1.334H4.667a1.333 1.333 0 01-1.334-1.334V4h9.334z" />
+                    </svg>
                   </button>
                 </td>
               </tr>

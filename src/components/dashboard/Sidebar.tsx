@@ -33,12 +33,12 @@ export default function Sidebar({ mobile, open, onClose }: SidebarProps) {
   const nav = (
     <aside className="w-[240px] shrink-0 bg-bg-card border-r border-border flex flex-col h-screen">
       {/* Logo */}
-      <div className="px-6 h-16 flex items-center gap-2 border-b border-border">
+      <Link href="/" className="px-6 h-16 flex items-center gap-2 border-b border-border no-underline">
         <div className="w-7 h-7 bg-gradient-to-br from-green to-accent rounded-md flex items-center justify-center text-sm font-bold">
           P
         </div>
         <span className="text-lg font-bold tracking-tight">PnLab</span>
-      </div>
+      </Link>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
