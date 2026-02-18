@@ -99,16 +99,16 @@ export default function TradesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="font-serif text-3xl mb-1">Trades</h1>
+          <h1 className="font-serif text-2xl md:text-3xl mb-1">Trades</h1>
           <p className="text-text-muted text-[13px] font-light">
             {trades.length} total trades
           </p>
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="px-5 py-2.5 bg-text text-bg border-none rounded-lg font-mono text-[13px] font-semibold cursor-pointer transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)]"
+          className="w-full sm:w-auto px-5 py-2.5 bg-text text-bg border-none rounded-lg font-mono text-[13px] font-semibold cursor-pointer transition-all hover:-translate-y-px hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)]"
         >
           + Add Trade
         </button>

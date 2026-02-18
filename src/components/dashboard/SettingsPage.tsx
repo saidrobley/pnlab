@@ -75,8 +75,8 @@ export default function SettingsPage({ email }: SettingsPageProps) {
 
   return (
     <div>
-      <h1 className="font-serif text-3xl mb-1">Settings</h1>
-      <p className="text-text-muted text-[13px] font-light mb-8">
+      <h1 className="font-serif text-2xl md:text-3xl mb-1">Settings</h1>
+      <p className="text-text-muted text-[13px] font-light mb-6 md:mb-8">
         Manage your account
       </p>
 
@@ -84,7 +84,7 @@ export default function SettingsPage({ email }: SettingsPageProps) {
         {/* Profile */}
         <form
           onSubmit={handleSave}
-          className="bg-bg-card border border-border rounded-2xl p-6"
+          className="bg-bg-card border border-border rounded-2xl p-4 md:p-6"
         >
           <h3 className="text-[15px] font-semibold mb-4">Profile</h3>
 
@@ -129,7 +129,7 @@ export default function SettingsPage({ email }: SettingsPageProps) {
         </form>
 
         {/* Sign out */}
-        <div className="bg-bg-card border border-border rounded-2xl p-6">
+        <div className="bg-bg-card border border-border rounded-2xl p-4 md:p-6">
           <h3 className="text-[15px] font-semibold mb-2">Sign Out</h3>
           <p className="text-[13px] text-text-muted font-light mb-4">
             Sign out of your account on this device.

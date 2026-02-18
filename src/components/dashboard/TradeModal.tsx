@@ -178,13 +178,13 @@ export default function TradeModal({
       className="fixed inset-0 bg-[rgba(0,0,0,0.7)] backdrop-blur-[8px] z-[200] flex items-center justify-center"
       onClick={handleOverlayClick}
     >
-      <div className="bg-bg-card border border-border rounded-2xl p-8 max-w-[600px] w-[90%] max-h-[90vh] overflow-y-auto">
+      <div className="bg-bg-card border border-border rounded-2xl p-5 sm:p-8 max-w-[600px] w-[95%] sm:w-[90%] max-h-[90vh] overflow-y-auto">
         <h3 className="font-serif text-2xl mb-6">
           {isEdit ? "Edit Trade" : "Add Trade"}
         </h3>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Symbol *</label>
               <input
@@ -249,7 +249,7 @@ export default function TradeModal({
                 className={inputClass}
               />
             </div>
-            <div className="col-span-2">
+            <div className="sm:col-span-2">
               <label className={labelClass}>
                 P&L (auto-calculated)
               </label>
@@ -300,7 +300,7 @@ export default function TradeModal({
                 className={inputClass}
               />
             </div>
-            <div className="col-span-2">
+            <div className="sm:col-span-2">
               <label className={labelClass}>Notes</label>
               <textarea
                 value={form.notes}

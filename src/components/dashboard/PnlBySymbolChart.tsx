@@ -18,7 +18,7 @@ interface PnlBySymbolChartProps {
 export default function PnlBySymbolChart({ data }: PnlBySymbolChartProps) {
   if (data.length === 0) {
     return (
-      <div className="bg-bg-card border border-border rounded-2xl p-5 flex items-center justify-center h-[320px]">
+      <div className="bg-bg-card border border-border rounded-2xl p-4 md:p-5 flex items-center justify-center h-[250px] md:h-[320px]">
         <p className="text-text-muted text-[13px] font-light">
           No trade data yet
         </p>
@@ -27,7 +27,7 @@ export default function PnlBySymbolChart({ data }: PnlBySymbolChartProps) {
   }
 
   return (
-    <div className="bg-bg-card border border-border rounded-2xl p-5">
+    <div className="bg-bg-card border border-border rounded-2xl p-4 md:p-5">
       <h3 className="text-[13px] font-semibold mb-4 tracking-tight">
         P&L by Symbol
       </h3>

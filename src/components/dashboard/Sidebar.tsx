@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 const navItems = [
   { label: "Overview", href: "/dashboard", icon: "◎" },
@@ -10,11 +11,27 @@ const navItems = [
   { label: "Settings", href: "/dashboard/settings", icon: "⚙" },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  mobile?: boolean;
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export default function Sidebar({ mobile, open, onClose }: SidebarProps) {
   const pathname = usePathname();
 
-  return (
-    <aside className="w-[240px] shrink-0 bg-bg-card border-r border-border flex flex-col h-screen sticky top-0">
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobile && open) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [mobile, open]);
+
+  const nav = (
+    <aside className="w-[240px] shrink-0 bg-bg-card border-r border-border flex flex-col h-screen">
       {/* Logo */}
       <div className="px-6 h-16 flex items-center gap-2 border-b border-border">
         <div className="w-7 h-7 bg-gradient-to-br from-green to-accent rounded-md flex items-center justify-center text-sm font-bold">
@@ -35,6 +52,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={mobile ? onClose : undefined}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors no-underline ${
                 isActive
                   ? "bg-bg-elevated text-text"
@@ -48,5 +66,31 @@ export default function Sidebar() {
         })}
       </nav>
     </aside>
+  );
+
+  if (!mobile) {
+    return <div className="sticky top-0 h-screen">{nav}</div>;
+  }
+
+  return (
+    <div
+      className={`fixed inset-0 z-[100] transition-opacity duration-300 ${
+        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-[rgba(0,0,0,0.6)]"
+        onClick={onClose}
+      />
+      {/* Panel */}
+      <div
+        className={`absolute top-0 left-0 h-full transition-transform duration-300 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {nav}
+      </div>
+    </div>
   );
 }

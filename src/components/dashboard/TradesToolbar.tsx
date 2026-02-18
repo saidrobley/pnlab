@@ -31,20 +31,20 @@ export default function TradesToolbar({
   const hasFilters = Object.values(filters).some((v) => v !== "");
 
   return (
-    <div className="flex flex-wrap items-center gap-3 mb-4">
+    <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3 mb-4">
       <input
         type="text"
         placeholder="Symbol"
         value={filters.symbol}
         onChange={(e) => update({ symbol: e.target.value })}
-        className={`${inputClass} w-[120px]`}
+        className={`${inputClass} w-full sm:w-[120px]`}
       />
       <select
         value={filters.direction}
         onChange={(e) =>
           update({ direction: e.target.value as TradeFilters["direction"] })
         }
-        className={`${inputClass} w-[120px]`}
+        className={`${inputClass} w-full sm:w-[120px]`}
       >
         <option value="">All Directions</option>
         <option value="long">Long</option>
@@ -55,24 +55,24 @@ export default function TradesToolbar({
         placeholder="Strategy"
         value={filters.strategy}
         onChange={(e) => update({ strategy: e.target.value })}
-        className={`${inputClass} w-[140px]`}
+        className={`${inputClass} w-full sm:w-[140px]`}
       />
       <input
         type="date"
         value={filters.dateFrom}
         onChange={(e) => update({ dateFrom: e.target.value })}
-        className={inputClass}
+        className={`${inputClass} w-full sm:w-auto`}
       />
       <input
         type="date"
         value={filters.dateTo}
         onChange={(e) => update({ dateTo: e.target.value })}
-        className={inputClass}
+        className={`${inputClass} w-full sm:w-auto`}
       />
       {hasFilters && (
         <button
           onClick={clearFilters}
-          className="text-[13px] text-text-muted hover:text-text transition-colors bg-transparent border-none font-mono cursor-pointer"
+          className="col-span-2 sm:col-span-1 text-[13px] text-text-muted hover:text-text transition-colors bg-transparent border-none font-mono cursor-pointer"
         >
           Clear Filters
         </button>

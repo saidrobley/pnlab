@@ -47,13 +47,13 @@ export default function DashboardOverview() {
 
   return (
     <div>
-      <h1 className="font-serif text-3xl mb-1">Overview</h1>
-      <p className="text-text-muted text-[13px] font-light mb-8">
+      <h1 className="font-serif text-2xl md:text-3xl mb-1">Overview</h1>
+      <p className="text-text-muted text-[13px] font-light mb-6 md:mb-8">
         Your trading performance at a glance
       </p>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6 md:mb-8">
         <StatCard label="Total P&L" value={formatUsd(stats.totalPnl)} colored />
         <StatCard label="Win Rate" value={`${stats.winRate.toFixed(1)}%`} />
         <StatCard label="Total Trades" value={String(stats.totalTrades)} />

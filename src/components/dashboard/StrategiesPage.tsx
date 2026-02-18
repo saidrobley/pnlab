@@ -91,8 +91,8 @@ export default function StrategiesPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-3xl mb-1">Strategies</h1>
-      <p className="text-text-muted text-[13px] font-light mb-8">
+      <h1 className="font-serif text-2xl md:text-3xl mb-1">Strategies</h1>
+      <p className="text-text-muted text-[13px] font-light mb-6 md:mb-8">
         Define and track your trading strategies
       </p>
 
@@ -102,7 +102,7 @@ export default function StrategiesPage() {
         className="bg-bg-card border border-border rounded-2xl p-5 mb-6"
       >
         <h3 className="text-[13px] font-semibold mb-4">Add Strategy</h3>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             placeholder="Strategy name"
@@ -116,7 +116,7 @@ export default function StrategiesPage() {
             placeholder="Description (optional)"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="flex-[2] px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent"
+            className="sm:flex-[2] px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent"
           />
           <button
             type="submit"

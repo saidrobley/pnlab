@@ -14,7 +14,7 @@ export default function StatCard({ label, value, colored }: StatCardProps) {
   }
 
   return (
-    <div className="bg-bg-card border border-border rounded-2xl p-5">
+    <div className="bg-bg-card border border-border rounded-2xl p-4 md:p-5">
       <div className="text-[11px] text-text-muted font-medium uppercase tracking-wider mb-2">
         {label}
       </div>

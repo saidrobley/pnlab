@@ -55,7 +55,7 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
               ].map((h, i) => (
                 <th
                   key={i}
-                  className="text-left px-4 py-3 text-[11px] text-text-muted font-medium uppercase tracking-wider"
+                  className="text-left px-3 py-2 md:px-4 md:py-3 text-[11px] text-text-muted font-medium uppercase tracking-wider"
                 >
                   {h}
                 </th>
@@ -68,11 +68,11 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                 key={trade.id}
                 className="border-b border-border/50 hover:bg-bg-elevated/30 transition-colors"
               >
-                <td className="px-4 py-3 text-text-muted font-light whitespace-nowrap">
+                <td className="px-3 py-2 md:px-4 md:py-3 text-text-muted font-light whitespace-nowrap">
                   {formatDate(trade.closed_at || trade.opened_at)}
                 </td>
-                <td className="px-4 py-3 font-medium">{trade.symbol}</td>
-                <td className="px-4 py-3">
+                <td className="px-3 py-2 md:px-4 md:py-3 font-medium">{trade.symbol}</td>
+                <td className="px-3 py-2 md:px-4 md:py-3">
                   <span
                     className={`inline-block px-2 py-0.5 rounded text-[11px] font-medium ${
                       trade.direction === "long"
@@ -83,15 +83,15 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                     {trade.direction.toUpperCase()}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-light">
+                <td className="px-3 py-2 md:px-4 md:py-3 font-light">
                   ${Number(trade.entry_price).toFixed(2)}
                 </td>
-                <td className="px-4 py-3 font-light">
+                <td className="px-3 py-2 md:px-4 md:py-3 font-light">
                   {trade.exit_price !== null
                     ? `$${Number(trade.exit_price).toFixed(2)}`
                     : "—"}
                 </td>
-                <td className="px-4 py-3 font-light">{Number(trade.size)}</td>
+                <td className="px-3 py-2 md:px-4 md:py-3 font-light">{Number(trade.size)}</td>
                 <td
                   className={`px-4 py-3 font-medium ${
                     trade.pnl !== null && trade.pnl >= 0
@@ -101,16 +101,16 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                 >
                   {formatUsd(trade.pnl)}
                 </td>
-                <td className="px-4 py-3 font-light text-text-muted">
+                <td className="px-3 py-2 md:px-4 md:py-3 font-light text-text-muted">
                   ${Number(trade.fees).toFixed(2)}
                 </td>
-                <td className="px-4 py-3 font-light text-text-muted">
+                <td className="px-3 py-2 md:px-4 md:py-3 font-light text-text-muted">
                   {trade.strategy || "—"}
                 </td>
-                <td className="px-4 py-3 font-light text-text-muted">
+                <td className="px-3 py-2 md:px-4 md:py-3 font-light text-text-muted">
                   {trade.exchange || "—"}
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap">
+                <td className="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap">
                   <button
                     onClick={() => onEdit(trade)}
                     className="text-text-muted hover:text-text text-[12px] font-medium mr-3 transition-colors"
