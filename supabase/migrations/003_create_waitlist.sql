@@ -10,11 +10,11 @@ alter table waitlist enable row level security;
 -- Allow anonymous inserts
 create policy "Anyone can join waitlist"
   on waitlist for insert
-  to anon
+  to anon, authenticated
   with check (true);
 
 -- Allow anonymous select (for count queries)
 create policy "Anyone can count waitlist"
   on waitlist for select
-  to anon
+  to anon, authenticated
   using (true);
