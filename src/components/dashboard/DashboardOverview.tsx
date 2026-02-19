@@ -31,7 +31,11 @@ const PERIOD_DAYS: Record<Period, number | null> = {
 
 function formatUsd(value: number): string {
   const prefix = value >= 0 ? "+$" : "-$";
-  return `${prefix}${Math.abs(value).toFixed(2)}`;
+  const abs = Math.abs(value);
+  if (abs === 0) return `${prefix}0.00`;
+  if (abs < 0.01) return `${prefix}${abs.toPrecision(4)}`;
+  if (abs < 1) return `${prefix}${abs.toFixed(4)}`;
+  return `${prefix}${abs.toFixed(2)}`;
 }
 
 export default function DashboardOverview() {
