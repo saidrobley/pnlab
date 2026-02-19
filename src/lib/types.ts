@@ -50,6 +50,33 @@ export interface TradeFilters {
   dateTo: string;
 }
 
+export interface ExchangeConnection {
+  id: string;
+  user_id: string;
+  exchange: string;
+  wallet_address: string;
+  sync_period: "7d" | "30d" | "90d" | "180d";
+  last_synced_at: string | null;
+  created_at: string;
+}
+
+export interface HyperliquidFill {
+  coin: string;
+  px: string;
+  sz: string;
+  side: string;
+  time: number;
+  fee: string;
+  closedPnl: string;
+  dir: string;
+  hash: string;
+  tid: number;
+  oid: number;
+  crossed: boolean;
+  feeToken: string;
+  builderFee?: string;
+}
+
 export interface PnlStats {
   totalPnl: number;
   winRate: number;
