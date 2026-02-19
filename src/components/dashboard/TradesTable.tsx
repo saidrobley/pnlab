@@ -17,6 +17,14 @@ function formatDate(dateStr: string | null): string {
   });
 }
 
+function formatPrice(value: number): string {
+  const abs = Math.abs(value);
+  if (abs === 0) return "$0.00";
+  if (abs < 0.01) return `$${value.toPrecision(4)}`;
+  if (abs < 1) return `$${value.toFixed(4)}`;
+  return `$${value.toFixed(2)}`;
+}
+
 function formatUsd(value: number | null): string {
   if (value === null) return "—";
   const prefix = value >= 0 ? "+$" : "-$";
@@ -96,11 +104,11 @@ export default function TradesTable({ trades, onEdit, onDelete }: TradesTablePro
                   </span>
                 </td>
                 <td className="px-3 py-2 md:px-4 md:py-3 font-light">
-                  ${Number(trade.entry_price).toFixed(2)}
+                  {formatPrice(Number(trade.entry_price))}
                 </td>
                 <td className="px-3 py-2 md:px-4 md:py-3 font-light">
                   {trade.exit_price !== null
-                    ? `$${Number(trade.exit_price).toFixed(2)}`
+                    ? formatPrice(Number(trade.exit_price))
                     : "—"}
                 </td>
                 <td className="px-3 py-2 md:px-4 md:py-3 font-light">{Number(trade.size)}</td>

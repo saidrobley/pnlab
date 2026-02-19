@@ -25,20 +25,34 @@ export async function fetchHyperliquidFills(
 }
 
 export function mapFillToTrade(fill: HyperliquidFill, userId: string) {
-  const isClose = fill.dir.startsWith("Close");
   const direction = fill.dir.includes("Long") ? "long" : "short";
+  const exitPrice = parseFloat(fill.px);
+  const size = parseFloat(fill.sz);
+  const pnl = parseFloat(fill.closedPnl);
+
+  // Back-calculate entry price from closed P&L:
+  // Long:  pnl ≈ (exit - entry) * size  →  entry = exit - pnl/size
+  // Short: pnl ≈ (entry - exit) * size  →  entry = exit + pnl/size
+  const entryPrice =
+    size > 0
+      ? direction === "long"
+        ? exitPrice - pnl / size
+        : exitPrice + pnl / size
+      : exitPrice;
+
+  const closedAt = new Date(fill.time).toISOString();
 
   return {
     user_id: userId,
     symbol: fill.coin,
     direction,
-    entry_price: parseFloat(fill.px),
-    exit_price: isClose ? parseFloat(fill.px) : null,
-    size: parseFloat(fill.sz),
+    entry_price: entryPrice,
+    exit_price: exitPrice,
+    size,
     fees: parseFloat(fill.fee),
-    pnl: isClose ? parseFloat(fill.closedPnl) : null,
-    opened_at: new Date(fill.time).toISOString(),
-    closed_at: isClose ? new Date(fill.time).toISOString() : null,
+    pnl,
+    opened_at: closedAt,
+    closed_at: closedAt,
     exchange: "Hyperliquid",
     source: "hyperliquid",
     source_id: String(fill.tid),
@@ -50,8 +64,9 @@ export async function syncHyperliquidForUser(
   userId: string,
   wallet: string
 ) {
-  // Fetch all fills from Hyperliquid
-  const fills = await fetchHyperliquidFills(wallet);
+  // Fetch fills and keep only closing fills (completed trades with P&L)
+  const allFills = await fetchHyperliquidFills(wallet);
+  const fills = allFills.filter((f) => f.dir.startsWith("Close"));
 
   if (fills.length === 0) {
     return { inserted: 0, skipped: 0 };
