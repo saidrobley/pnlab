@@ -7,6 +7,7 @@ import { useEffect } from "react";
 const navItems = [
   { label: "Overview", href: "/dashboard", icon: "◎" },
   { label: "Trades", href: "/dashboard/trades", icon: "⇄" },
+  { label: "Calendar", href: "/dashboard/calendar", icon: "▦" },
   { label: "Strategies", href: "/dashboard/strategies", icon: "◆" },
   { label: "Settings", href: "/dashboard/settings", icon: "⚙" },
 ];
