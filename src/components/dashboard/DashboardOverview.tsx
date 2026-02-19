@@ -59,19 +59,7 @@ export default function DashboardOverview() {
     const days = PERIOD_DAYS[period];
     if (days === null) return trades;
     const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
-    const result = trades.filter((t) => t.closed_at && new Date(t.closed_at).getTime() >= cutoff);
-
-    // DEBUG: remove after verifying
-    if (trades.length > 0) {
-      const dates = trades.map((t) => new Date(t.closed_at!).getTime());
-      console.log(`[Overview] period=${period}, days=${days}`);
-      console.log(`[Overview] cutoff=${new Date(cutoff).toISOString()}`);
-      console.log(`[Overview] earliest trade=${new Date(Math.min(...dates)).toISOString()}`);
-      console.log(`[Overview] latest trade=${new Date(Math.max(...dates)).toISOString()}`);
-      console.log(`[Overview] ${result.length}/${trades.length} trades pass filter`);
-    }
-
-    return result;
+    return trades.filter((t) => t.closed_at && new Date(t.closed_at).getTime() >= cutoff);
   }, [trades, period]);
 
   const stats = computeStats(filteredTrades);

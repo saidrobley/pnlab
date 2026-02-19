@@ -64,15 +64,6 @@ export default function TradesPage() {
     const days = PERIOD_DAYS[period];
     const cutoff = days !== null ? Date.now() - days * 24 * 60 * 60 * 1000 : null;
 
-    // DEBUG: remove after verifying
-    if (trades.length > 0 && cutoff !== null) {
-      const dates = trades.map((t) => new Date(t.opened_at).getTime());
-      console.log(`[Trades] period=${period}, days=${days}`);
-      console.log(`[Trades] cutoff=${new Date(cutoff).toISOString()}`);
-      console.log(`[Trades] earliest trade=${new Date(Math.min(...dates)).toISOString()}`);
-      console.log(`[Trades] latest trade=${new Date(Math.max(...dates)).toISOString()}`);
-    }
-
     return trades.filter((t) => {
       if (cutoff !== null && new Date(t.opened_at).getTime() < cutoff) return false;
       if (
