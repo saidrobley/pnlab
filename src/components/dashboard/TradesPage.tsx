@@ -7,6 +7,26 @@ import TradesToolbar from "./TradesToolbar";
 import TradesTable from "./TradesTable";
 import TradeModal from "./TradeModal";
 
+type Period = "7d" | "1m" | "3m" | "6m" | "1y" | "all";
+
+const PERIOD_OPTIONS: { value: Period; label: string }[] = [
+  { value: "7d", label: "7D" },
+  { value: "1m", label: "1M" },
+  { value: "3m", label: "3M" },
+  { value: "6m", label: "6M" },
+  { value: "1y", label: "1Y" },
+  { value: "all", label: "All" },
+];
+
+const PERIOD_DAYS: Record<Period, number | null> = {
+  "7d": 7,
+  "1m": 30,
+  "3m": 90,
+  "6m": 180,
+  "1y": 365,
+  all: null,
+};
+
 const emptyFilters: TradeFilters = {
   symbol: "",
   direction: "",
@@ -19,6 +39,7 @@ const emptyFilters: TradeFilters = {
 export default function TradesPage() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [filters, setFilters] = useState<TradeFilters>(emptyFilters);
+  const [period, setPeriod] = useState<Period>("all");
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
@@ -40,7 +61,11 @@ export default function TradesPage() {
   }, [fetchTrades]);
 
   const filteredTrades = useMemo(() => {
+    const days = PERIOD_DAYS[period];
+    const cutoff = days !== null ? Date.now() - days * 24 * 60 * 60 * 1000 : null;
+
     return trades.filter((t) => {
+      if (cutoff !== null && new Date(t.opened_at).getTime() < cutoff) return false;
       if (
         filters.symbol &&
         !t.symbol.toLowerCase().includes(filters.symbol.toLowerCase())
@@ -65,7 +90,7 @@ export default function TradesPage() {
       }
       return true;
     });
-  }, [trades, filters]);
+  }, [trades, filters, period]);
 
   function handleEdit(trade: Trade) {
     setEditingTrade(trade);
@@ -101,11 +126,11 @@ export default function TradesPage() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
           <h1 className="font-serif text-2xl md:text-3xl mb-1">Trades</h1>
           <p className="text-text-muted text-[13px] font-light">
-            {trades.length} total trades
+            {filteredTrades.length} of {trades.length} trades
           </p>
         </div>
         <button
@@ -114,6 +139,23 @@ export default function TradesPage() {
         >
           + Add Trade
         </button>
+      </div>
+
+      {/* Period filter */}
+      <div className="flex gap-2 mb-4">
+        {PERIOD_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setPeriod(opt.value)}
+            className={`px-4 py-2 rounded-lg font-mono text-[13px] font-medium transition-colors ${
+              period === opt.value
+                ? "bg-accent text-white"
+                : "bg-bg-elevated text-text-muted hover:text-text border border-border"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
 
       <TradesToolbar filters={filters} onChange={setFilters} />

@@ -58,8 +58,8 @@ export default function DashboardOverview() {
   const filteredTrades = useMemo(() => {
     const days = PERIOD_DAYS[period];
     if (days === null) return trades;
-    const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-    return trades.filter((t) => t.closed_at && t.closed_at >= cutoff);
+    const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+    return trades.filter((t) => t.closed_at && new Date(t.closed_at).getTime() >= cutoff);
   }, [trades, period]);
 
   const stats = computeStats(filteredTrades);
