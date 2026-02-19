@@ -190,7 +190,7 @@ export default function CalendarPage() {
       </p>
 
       {viewMode === "daily" && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 md:mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
           <StatCard label="Month P&L" value={formatPnlStat(monthStats.pnl)} colored />
           <StatCard label="Total Trades" value={String(monthStats.count)} />
           <StatCard label="Win Days" value={`${monthStats.winDays}/${monthStats.tradingDays}`} colored />
@@ -199,12 +199,12 @@ export default function CalendarPage() {
       )}
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="flex gap-1 bg-bg-card border border-border rounded-lg p-1">
+        <div className="flex gap-1 bg-bg-card border border-border rounded-lg p-1 overflow-x-auto">
           {VIEW_MODES.map((vm) => (
             <button
               key={vm.value}
               onClick={() => setViewMode(vm.value)}
-              className={`px-3 py-1.5 rounded-md font-mono text-[12px] font-medium transition-colors ${
+              className={`shrink-0 px-3 py-1.5 rounded-md font-mono text-[12px] font-medium transition-colors ${
                 viewMode === vm.value
                   ? "bg-text text-bg"
                   : "text-text-muted hover:text-text"
@@ -243,7 +243,7 @@ export default function CalendarPage() {
       {viewMode === "yearly" && <YearlyGrid byDay={byDay} trades={trades} />}
 
       {viewMode === "daily" && (
-        <div className="flex items-center justify-center gap-6 mt-6 text-[12px] text-text-muted">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-6 text-[11px] md:text-[12px] text-text-muted">
           {[
             { color: "rgba(239,68,68,0.25)", label: "Big loss" },
             { color: "rgba(239,68,68,0.1)", label: "Small loss" },
@@ -290,45 +290,47 @@ function DailyGrid({
   );
 
   return (
-    <div>
-      <div className="grid grid-cols-7 mb-px">
-        {DAY_NAMES.map((d) => (
-          <div key={d} className="text-center text-[11px] text-text-muted font-medium uppercase tracking-wider py-2">
-            {d}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7 gap-px">
-        {cells.map((cell, i) => {
-          if (cell === null) return <div key={i} className="bg-bg-card/30 rounded-lg min-h-[110px]" />;
-          const { day, key, data } = cell;
-          const isToday = key === todayKey;
-          const has = data !== null && data.count > 0;
-          return (
-            <div
-              key={i}
-              className={`bg-bg-card rounded-lg min-h-[110px] p-2.5 flex flex-col ${has ? borderCls(data.pnl) : ""}`}
-              style={has ? { backgroundColor: cellBg(data.pnl, maxAbs) } : {}}
-            >
-              <div className="flex items-center gap-1">
-                <span className="text-[13px] text-text-muted font-light">{day}</span>
-                {isToday && <span className="w-1.5 h-1.5 rounded-full bg-green" />}
-              </div>
-              {has ? (
-                <>
-                  <div className={`text-[15px] font-semibold mt-1 ${data.pnl >= 0 ? "text-green" : "text-red"}`}>
-                    {formatPnl(data.pnl)}
-                  </div>
-                  <div className="text-[11px] text-text-muted font-light">
-                    {data.count} trade{data.count !== 1 ? "s" : ""}
-                  </div>
-                </>
-              ) : (
-                <div className="text-[13px] text-text-dim mt-2">—</div>
-              )}
+    <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+      <div className="min-w-[640px]">
+        <div className="grid grid-cols-7 mb-px">
+          {DAY_NAMES.map((d) => (
+            <div key={d} className="text-center text-[10px] md:text-[11px] text-text-muted font-medium uppercase tracking-wider py-2">
+              {d}
             </div>
-          );
-        })}
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-px">
+          {cells.map((cell, i) => {
+            if (cell === null) return <div key={i} className="bg-bg-card/30 rounded-lg min-h-[90px] md:min-h-[110px]" />;
+            const { day, key, data } = cell;
+            const isToday = key === todayKey;
+            const has = data !== null && data.count > 0;
+            return (
+              <div
+                key={i}
+                className={`bg-bg-card rounded-lg min-h-[90px] md:min-h-[110px] p-1.5 md:p-2.5 flex flex-col ${has ? borderCls(data.pnl) : ""}`}
+                style={has ? { backgroundColor: cellBg(data.pnl, maxAbs) } : {}}
+              >
+                <div className="flex items-center gap-1">
+                  <span className="text-[12px] md:text-[13px] text-text-muted font-light">{day}</span>
+                  {isToday && <span className="w-1.5 h-1.5 rounded-full bg-green" />}
+                </div>
+                {has ? (
+                  <>
+                    <div className={`text-[13px] md:text-[15px] font-semibold mt-1 ${data.pnl >= 0 ? "text-green" : "text-red"}`}>
+                      {formatPnl(data.pnl)}
+                    </div>
+                    <div className="text-[10px] md:text-[11px] text-text-muted font-light">
+                      {data.count} trade{data.count !== 1 ? "s" : ""}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-[12px] text-text-dim mt-2">—</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -363,7 +365,7 @@ function WeeklyGrid({ byDay, year }: { byDay: Map<string, DayData>; year: number
         return (
           <div
             key={w.week}
-            className={`bg-bg-card rounded-lg p-3 min-h-[120px] flex flex-col ${has ? borderCls(w.data.pnl) : ""}`}
+            className={`bg-bg-card rounded-lg p-2.5 md:p-3 min-h-[110px] md:min-h-[120px] flex flex-col ${has ? borderCls(w.data.pnl) : ""}`}
             style={has ? { backgroundColor: cellBg(w.data.pnl, maxAbs) } : {}}
           >
             <div className="text-[11px] text-text-muted font-light">
@@ -404,7 +406,7 @@ function MonthlyGrid({ byDay, year }: { byDay: Map<string, DayData>; year: numbe
         return (
           <div
             key={m.month}
-            className={`bg-bg-card rounded-xl p-4 min-h-[110px] flex flex-col ${has ? borderCls(m.pnl) : ""}`}
+            className={`bg-bg-card rounded-xl p-3 md:p-4 min-h-[100px] md:min-h-[110px] flex flex-col ${has ? borderCls(m.pnl) : ""}`}
             style={has ? { backgroundColor: cellBg(m.pnl, maxAbs) } : {}}
           >
             <div className="text-[13px] text-text-muted font-light">{MONTH_NAMES[m.month]}</div>
@@ -445,7 +447,7 @@ function QuarterlyGrid({ byDay, year }: { byDay: Map<string, DayData>; year: num
         return (
           <div
             key={q.qi}
-            className={`bg-bg-card rounded-xl p-4 ${has ? borderCls(q.total.pnl) : ""}`}
+            className={`bg-bg-card rounded-xl p-3 md:p-4 ${has ? borderCls(q.total.pnl) : ""}`}
             style={has ? { backgroundColor: cellBg(q.total.pnl, maxAbs) } : {}}
           >
             <div className="flex justify-between items-start mb-4">
@@ -459,7 +461,7 @@ function QuarterlyGrid({ byDay, year }: { byDay: Map<string, DayData>; year: num
               </div>
               {has ? (
                 <div className="text-right">
-                  <div className={`text-[20px] font-semibold ${q.total.pnl >= 0 ? "text-green" : "text-red"}`}>
+                  <div className={`text-[18px] md:text-[20px] font-semibold ${q.total.pnl >= 0 ? "text-green" : "text-red"}`}>
                     {formatPnl(q.total.pnl)}
                   </div>
                   <div className="text-[11px] text-text-muted font-light">
@@ -476,7 +478,7 @@ function QuarterlyGrid({ byDay, year }: { byDay: Map<string, DayData>; year: num
                 return (
                   <div
                     key={m.month}
-                    className={`bg-bg/50 rounded-lg p-2.5 ${mHas ? borderCls(m.pnl) : ""}`}
+                    className={`bg-bg/50 rounded-lg p-2 md:p-2.5 ${mHas ? borderCls(m.pnl) : ""}`}
                     style={mHas ? { backgroundColor: cellBg(m.pnl, monthMaxAbs) } : {}}
                   >
                     <div className="text-[11px] text-text-muted font-light">{MONTH_NAMES[m.month]}</div>
@@ -535,14 +537,14 @@ function YearlyGrid({ byDay, trades }: { byDay: Map<string, DayData>; trades: Tr
         return (
           <div
             key={yd.year}
-            className={`bg-bg-card rounded-xl p-4 ${has ? borderCls(yd.total.pnl) : ""}`}
+            className={`bg-bg-card rounded-xl p-3 md:p-4 ${has ? borderCls(yd.total.pnl) : ""}`}
             style={has ? { backgroundColor: cellBg(yd.total.pnl, maxYearAbs) } : {}}
           >
             <div className="flex justify-between items-start mb-4">
-              <div className="text-[22px] font-serif">{yd.year}</div>
+              <div className="text-[18px] md:text-[22px] font-serif">{yd.year}</div>
               {has ? (
                 <div className="text-right">
-                  <div className={`text-[22px] font-semibold ${yd.total.pnl >= 0 ? "text-green" : "text-red"}`}>
+                  <div className={`text-[18px] md:text-[22px] font-semibold ${yd.total.pnl >= 0 ? "text-green" : "text-red"}`}>
                     {formatPnl(yd.total.pnl)}
                   </div>
                   <div className="text-[11px] text-text-muted font-light">
@@ -553,13 +555,13 @@ function YearlyGrid({ byDay, trades }: { byDay: Map<string, DayData>; trades: Tr
                 <div className="text-[13px] text-text-dim">—</div>
               )}
             </div>
-            <div className="grid grid-cols-6 lg:grid-cols-12 gap-2">
+            <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-1.5 md:gap-2">
               {yd.months.map((m) => {
                 const mHas = m.count > 0;
                 return (
                   <div
                     key={m.month}
-                    className="bg-bg/50 rounded-lg p-2 text-center"
+                    className="bg-bg/50 rounded-lg p-1.5 md:p-2 text-center"
                     style={mHas ? { backgroundColor: cellBg(m.pnl, monthMaxAbs) } : {}}
                   >
                     <div className="text-[11px] text-text-muted font-light">{MONTH_SHORT[m.month]}</div>
