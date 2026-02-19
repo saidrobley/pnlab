@@ -22,7 +22,6 @@ export default function SettingsPage({ email }: SettingsPageProps) {
   // Exchange connection state
   const [connection, setConnection] = useState<ExchangeConnection | null>(null);
   const [walletAddress, setWalletAddress] = useState("");
-  const [syncPeriod, setSyncPeriod] = useState<"7d" | "30d" | "90d" | "180d">("30d");
   const [connecting, setConnecting] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
@@ -66,7 +65,6 @@ export default function SettingsPage({ email }: SettingsPageProps) {
 
         if (conn) {
           setConnection(conn);
-          setSyncPeriod(conn.sync_period);
         }
       }
     }
@@ -128,7 +126,6 @@ export default function SettingsPage({ email }: SettingsPageProps) {
           user_id: user.id,
           exchange: "hyperliquid",
           wallet_address: walletAddress.trim(),
-          sync_period: syncPeriod,
         },
         { onConflict: "user_id,exchange" }
       )
@@ -212,19 +209,6 @@ export default function SettingsPage({ email }: SettingsPageProps) {
     setDisconnecting(false);
   }
 
-  async function handleSyncPeriodChange(newPeriod: "7d" | "30d" | "90d" | "180d") {
-    setSyncPeriod(newPeriod);
-    if (!connection) return;
-
-    const supabase = createBrowserClient();
-    await supabase
-      .from("exchange_connections")
-      .update({ sync_period: newPeriod })
-      .eq("id", connection.id);
-
-    setConnection({ ...connection, sync_period: newPeriod });
-  }
-
   function formatRelativeTime(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
@@ -240,13 +224,6 @@ export default function SettingsPage({ email }: SettingsPageProps) {
     { value: "dark", label: "Dark" },
     { value: "light", label: "Light" },
     { value: "system", label: "System" },
-  ] as const;
-
-  const syncPeriodOptions = [
-    { value: "7d", label: "Last 7 days" },
-    { value: "30d", label: "Last 30 days" },
-    { value: "90d", label: "Last 90 days" },
-    { value: "180d", label: "Last 180 days" },
   ] as const;
 
   return (
@@ -330,23 +307,6 @@ export default function SettingsPage({ email }: SettingsPageProps) {
                 </p>
               </div>
 
-              <div>
-                <label className="block text-[11px] text-text-muted font-medium uppercase tracking-wider mb-1.5">
-                  Sync Period
-                </label>
-                <select
-                  value={syncPeriod}
-                  onChange={(e) => handleSyncPeriodChange(e.target.value as "7d" | "30d" | "90d" | "180d")}
-                  className="w-full px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent"
-                >
-                  {syncPeriodOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {connection.last_synced_at && (
                 <p className="text-[12px] text-text-dim font-light">
                   Last synced: {formatRelativeTime(connection.last_synced_at)}
@@ -393,23 +353,6 @@ export default function SettingsPage({ email }: SettingsPageProps) {
                 {walletError && (
                   <p className="text-[11px] text-red-400 font-light mt-1">{walletError}</p>
                 )}
-              </div>
-
-              <div>
-                <label className="block text-[11px] text-text-muted font-medium uppercase tracking-wider mb-1.5">
-                  Sync Period
-                </label>
-                <select
-                  value={syncPeriod}
-                  onChange={(e) => setSyncPeriod(e.target.value as "7d" | "30d" | "90d" | "180d")}
-                  className="w-full px-3 py-2.5 bg-bg border border-border rounded-lg text-text font-mono text-[13px] outline-none transition-colors focus:border-accent"
-                >
-                  {syncPeriodOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               {syncResult && (

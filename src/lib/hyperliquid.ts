@@ -3,24 +3,13 @@ import { HyperliquidFill } from "./types";
 
 const HL_API_URL = "https://api.hyperliquid.xyz/info";
 
-const SYNC_PERIOD_MS: Record<string, number> = {
-  "7d": 7 * 24 * 60 * 60 * 1000,
-  "30d": 30 * 24 * 60 * 60 * 1000,
-  "90d": 90 * 24 * 60 * 60 * 1000,
-  "180d": 180 * 24 * 60 * 60 * 1000,
-};
-
 export async function fetchHyperliquidFills(
-  wallet: string,
-  startTime?: number
+  wallet: string
 ): Promise<HyperliquidFill[]> {
   const body: Record<string, unknown> = {
     type: "userFills",
     user: wallet,
   };
-  if (startTime !== undefined) {
-    body.startTime = startTime;
-  }
 
   const res = await fetch(HL_API_URL, {
     method: "POST",
@@ -59,14 +48,10 @@ export function mapFillToTrade(fill: HyperliquidFill, userId: string) {
 export async function syncHyperliquidForUser(
   supabase: SupabaseClient,
   userId: string,
-  wallet: string,
-  syncPeriod: string
+  wallet: string
 ) {
-  const cutoffMs = SYNC_PERIOD_MS[syncPeriod] ?? SYNC_PERIOD_MS["30d"];
-  const startTime = Date.now() - cutoffMs;
-
-  // Fetch fills from Hyperliquid
-  const fills = await fetchHyperliquidFills(wallet, startTime);
+  // Fetch all fills from Hyperliquid
+  const fills = await fetchHyperliquidFills(wallet);
 
   if (fills.length === 0) {
     return { inserted: 0, skipped: 0 };

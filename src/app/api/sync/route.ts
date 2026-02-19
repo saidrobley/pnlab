@@ -33,8 +33,7 @@ export async function POST() {
     const result = await syncHyperliquidForUser(
       admin,
       user.id,
-      connection.wallet_address,
-      connection.sync_period
+      connection.wallet_address
     );
 
     // Update last_synced_at

@@ -1,12 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createBrowserClient } from "@/lib/supabase";
 import { Trade } from "@/lib/types";
 import { computeStats, computeCumulativePnl, computePnlBySymbol } from "@/lib/stats";
+
+type Period = "7d" | "1m" | "3m" | "6m" | "1y" | "all";
+
+const PERIOD_OPTIONS: { value: Period; label: string }[] = [
+  { value: "7d", label: "7D" },
+  { value: "1m", label: "1M" },
+  { value: "3m", label: "3M" },
+  { value: "6m", label: "6M" },
+  { value: "1y", label: "1Y" },
+  { value: "all", label: "All" },
+];
+
 import StatCard from "./StatCard";
 import PnlCumulativeChart from "./PnlCumulativeChart";
 import PnlBySymbolChart from "./PnlBySymbolChart";
+
+const PERIOD_DAYS: Record<Period, number | null> = {
+  "7d": 7,
+  "1m": 30,
+  "3m": 90,
+  "6m": 180,
+  "1y": 365,
+  all: null,
+};
 
 function formatUsd(value: number): string {
   const prefix = value >= 0 ? "+$" : "-$";
@@ -16,6 +37,7 @@ function formatUsd(value: number): string {
 export default function DashboardOverview() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState<Period>("3m");
 
   useEffect(() => {
     async function fetchTrades() {
@@ -33,9 +55,16 @@ export default function DashboardOverview() {
     fetchTrades();
   }, []);
 
-  const stats = computeStats(trades);
-  const cumulativeData = computeCumulativePnl(trades);
-  const symbolData = computePnlBySymbol(trades);
+  const filteredTrades = useMemo(() => {
+    const days = PERIOD_DAYS[period];
+    if (days === null) return trades;
+    const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    return trades.filter((t) => t.closed_at && t.closed_at >= cutoff);
+  }, [trades, period]);
+
+  const stats = computeStats(filteredTrades);
+  const cumulativeData = computeCumulativePnl(filteredTrades);
+  const symbolData = computePnlBySymbol(filteredTrades);
 
   if (loading) {
     return (
@@ -48,9 +77,26 @@ export default function DashboardOverview() {
   return (
     <div>
       <h1 className="font-serif text-2xl md:text-3xl mb-1">Overview</h1>
-      <p className="text-text-muted text-[13px] font-light mb-6 md:mb-8">
+      <p className="text-text-muted text-[13px] font-light mb-4">
         Your trading performance at a glance
       </p>
+
+      {/* Period filter */}
+      <div className="flex gap-2 mb-6 md:mb-8">
+        {PERIOD_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setPeriod(opt.value)}
+            className={`px-4 py-2 rounded-lg font-mono text-[13px] font-medium transition-colors ${
+              period === opt.value
+                ? "bg-accent text-white"
+                : "bg-bg-elevated text-text-muted hover:text-text border border-border"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6 md:mb-8">

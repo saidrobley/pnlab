@@ -33,8 +33,7 @@ export async function GET(request: NextRequest) {
       const result = await syncHyperliquidForUser(
         admin,
         conn.user_id,
-        conn.wallet_address,
-        conn.sync_period
+        conn.wallet_address
       );
 
       await admin
