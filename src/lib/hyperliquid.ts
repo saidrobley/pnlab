@@ -3,6 +3,30 @@ import { HyperliquidFill } from "./types";
 
 const HL_API_URL = "https://api.hyperliquid.xyz/info";
 
+export async function fetchHyperliquidAccountState(
+  wallet: string
+): Promise<{ accountValue: number; unrealizedPnl: number }> {
+  const res = await fetch(HL_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: "clearinghouseState", user: wallet }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Hyperliquid API error: ${res.status}`);
+  }
+
+  const data = await res.json();
+  const accountValue = parseFloat(data.marginSummary.accountValue);
+  const unrealizedPnl = (data.assetPositions ?? []).reduce(
+    (sum: number, ap: { position: { unrealizedPnl: string } }) =>
+      sum + parseFloat(ap.position.unrealizedPnl),
+    0
+  );
+
+  return { accountValue, unrealizedPnl };
+}
+
 export async function fetchHyperliquidFills(
   wallet: string
 ): Promise<HyperliquidFill[]> {

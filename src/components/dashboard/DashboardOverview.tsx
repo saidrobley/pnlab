@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import Link from "next/link";
 import { createBrowserClient } from "@/lib/supabase";
 import { Trade } from "@/lib/types";
 import { computeStats, computeCumulativePnl, computePnlBySymbol } from "@/lib/stats";
@@ -38,10 +39,53 @@ function formatUsd(value: number): string {
   return `${prefix}${abs.toFixed(2)}`;
 }
 
+function formatEquity(value: number): string {
+  return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function LiveDot() {
+  return (
+    <span className="flex items-center gap-1 text-[10px] text-green font-medium normal-case tracking-normal">
+      <span className="relative flex h-2 w-2">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75" />
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
+      </span>
+      Live
+    </span>
+  );
+}
+
 export default function DashboardOverview() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<Period>("3m");
+  const [accountData, setAccountData] = useState<{
+    accountValue: number;
+    unrealizedPnl: number;
+  } | null>(null);
+  const [connected, setConnected] = useState(true);
+
+  const fetchAccount = useCallback(async () => {
+    try {
+      const res = await fetch("/api/account");
+      const data = await res.json();
+      if (data.connected === false) {
+        setConnected(false);
+        setAccountData(null);
+      } else if (res.ok) {
+        setConnected(true);
+        setAccountData({ accountValue: data.accountValue, unrealizedPnl: data.unrealizedPnl });
+      }
+    } catch {
+      // silently ignore – will retry on next poll
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAccount();
+    const interval = setInterval(fetchAccount, 30_000);
+    return () => clearInterval(interval);
+  }, [fetchAccount]);
 
   useEffect(() => {
     async function fetchTrades() {
@@ -100,6 +144,29 @@ export default function DashboardOverview() {
             {opt.label}
           </button>
         ))}
+      </div>
+
+      {/* Live account cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <StatCard
+          label="Total Equity"
+          value={connected && accountData ? formatEquity(accountData.accountValue) : "--"}
+          suffix={connected && accountData ? undefined : (
+            <Link href="/dashboard/settings" className="text-[10px] text-accent hover:underline normal-case tracking-normal">
+              Connect exchange
+            </Link>
+          )}
+        />
+        <StatCard
+          label="Unrealized PnL"
+          value={connected && accountData ? formatUsd(accountData.unrealizedPnl) : "--"}
+          colored={connected && accountData !== null}
+          suffix={connected && accountData ? <LiveDot /> : (
+            <Link href="/dashboard/settings" className="text-[10px] text-accent hover:underline normal-case tracking-normal">
+              Connect exchange
+            </Link>
+          )}
+        />
       </div>
 
       {/* Stat cards */}
