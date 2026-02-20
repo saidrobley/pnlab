@@ -194,10 +194,22 @@ export default function SettingsPage({ email }: SettingsPageProps) {
 
   async function handleDisconnect() {
     if (!connection) return;
-    if (!confirm("Disconnect Hyperliquid? Your synced trades will be kept.")) return;
+    if (!confirm("Remove Hyperliquid wallet and delete all synced trades? This cannot be undone.")) return;
 
     setDisconnecting(true);
     const supabase = createBrowserClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      await supabase
+        .from("trades")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("source", "hyperliquid");
+    }
+
     await supabase
       .from("exchange_connections")
       .delete()
@@ -330,7 +342,7 @@ export default function SettingsPage({ email }: SettingsPageProps) {
                   disabled={disconnecting}
                   className="px-4 py-2 bg-bg-elevated text-text-muted border border-border rounded-lg font-mono text-[13px] font-medium transition-colors hover:text-red-400 hover:border-red-400/50 disabled:opacity-50"
                 >
-                  {disconnecting ? "Disconnecting..." : "Disconnect"}
+                  {disconnecting ? "Removing..." : "Remove"}
                 </button>
               </div>
             </div>
